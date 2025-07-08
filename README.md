@@ -158,5 +158,4 @@ VITE_API_BASE_URL=https://api.yourdomain.com
 
 ## Contact
 Untuk pertanyaan dan support, hubungi:
-- Email: [your-email@example.com]
-- GitHub: [your-github-username]
+- GitHub: Frax404NF
