@@ -15,26 +15,9 @@ const DoctorDashboard = () => {
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
               Dashboard Dokter
             </h1>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600">
               Selamat datang, Dr. {currentUser?.staff_name || 'Dokter'}
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-blue-900">Pasien Hari Ini</h3>
-                <p className="text-2xl font-bold text-blue-600">-</p>
-                <p className="text-sm text-blue-600">Akan tersedia setelah integrasi encounter</p>
-              </div>
-              <div className="bg-green-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-green-900">Kasus Selesai</h3>
-                <p className="text-2xl font-bold text-green-600">-</p>
-                <p className="text-sm text-green-600">Akan tersedia setelah integrasi encounter</p>
-              </div>
-              <div className="bg-yellow-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-yellow-900">Pending Review</h3>
-                <p className="text-2xl font-bold text-yellow-600">-</p>
-                <p className="text-sm text-yellow-600">Akan tersedia setelah integrasi encounter</p>
-              </div>
-            </div>
           </div>
         </DashboardCard>
 
