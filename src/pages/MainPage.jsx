@@ -1,10 +1,24 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { Button } from "@material-tailwind/react";
-import { GoogleCircle } from "iconoir-react";
-
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const MainPage = () => {
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+
+  // Jika user sudah login, redirect ke dashboard sesuai role
+  React.useEffect(() => {
+    if (currentUser) {
+      if (currentUser.role === 'DOCTOR') {
+        navigate('/dokter-view');
+      } else if (currentUser.role === 'NURSE') {
+        navigate('/nurse-view');
+      } else if (currentUser.role === 'ADMIN') {
+        navigate('/admin-view');
+      }
+    }
+  }, [currentUser, navigate]);
+
   return (
     <div className="min-h-screen bg-slate-300 flex flex-col items-center justify-center px-4">
       <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center">
@@ -46,16 +60,6 @@ const MainPage = () => {
           >
             Masuk sebagai Perawat
           </Link>
-          <Link
-            to="/patient-view"
-            className="block w-full bg-slate-600 text-white py-2 rounded-md hover:bg-slate-700 transition"
-          >
-            Masuk sebagai Pasien
-          </Link>
-          
-          <Button className="border-white bg-white text-black shadow-md shadow-black/10 hover:border-white hover:bg-white hover:brightness-110">
-            <GoogleCircle className="mr-2 h-4 w-4 stroke-2" /> Continue with Google
-          </Button>
         </div>
       </div>
     </div>
