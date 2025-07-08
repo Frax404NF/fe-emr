@@ -4,20 +4,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { USER_ROLES, ROUTES } from "./constants";
 
 // Page Components
-import { 
-  AdminDashboard, 
-  DoctorDashboard, 
-  NurseDashboard, 
-  PatientDashboard 
-} from "./pages/Dashboard";
-import { 
-  InpatientDetailPatient, 
-  PatientVisitDetail 
-} from "./pages/Patient";
-import { 
-  LoginPage, 
-  RegisterPage 
-} from "./pages/Auth";
+import { AdminDashboard, DoctorDashboard, NurseDashboard, PatientDashboard } from "./pages/Dashboard";
+import { InpatientDetailPatient, PatientVisitDetail } from "./pages/Patient";
+import { LoginPage, RegisterPage } from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import MainPage from "./pages/MainPage";
 
@@ -26,7 +15,7 @@ import "./index.css";
 
 /**
  * AppRoutes Component
- * 
+ *
  * Mendefinisikan semua rute dalam aplikasi dengan proteksi yang sesuai.
  * Menggunakan ProtectedRoute untuk mengontrol akses berdasarkan autentikasi dan role.
  */
@@ -38,85 +27,69 @@ const AppRoutes = () => {
       <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
 
       {/* Protected Routes - Memerlukan autentikasi */}
-      <Route 
-        path={ROUTES.HOME} 
-        element={
-          <ProtectedRoute>
-            <MainPage />
-          </ProtectedRoute>
-        } 
-      />
+      <Route path={ROUTES.HOME} element={ <ProtectedRoute> <MainPage /> </ProtectedRoute> }/>
 
       {/* Role-based Protected Routes */}
-      <Route 
-        path={ROUTES.DOCTOR_DASHBOARD} 
+      <Route
+        path={ROUTES.DOCTOR_DASHBOARD}
         element={
           <ProtectedRoute roles={[USER_ROLES.DOCTOR]}>
             <DoctorDashboard />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path={ROUTES.NURSE_DASHBOARD} 
+
+      <Route
+        path={ROUTES.NURSE_DASHBOARD}
         element={
           <ProtectedRoute roles={[USER_ROLES.NURSE]}>
             <NurseDashboard />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path={ROUTES.PATIENT_DASHBOARD} 
+
+      <Route
+        path={ROUTES.PATIENT_DASHBOARD}
         element={
           <ProtectedRoute roles={[USER_ROLES.PATIENT]}>
             <PatientDashboard />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path={ROUTES.ADMIN_DASHBOARD} 
+
+      <Route
+        path={ROUTES.ADMIN_DASHBOARD}
         element={
           <ProtectedRoute roles={[USER_ROLES.ADMIN]}>
             <AdminDashboard />
           </ProtectedRoute>
-        } 
+        }
       />
 
       {/* General Protected Routes */}
-      <Route 
-        path={ROUTES.VISIT_DETAIL} 
+      <Route
+        path={ROUTES.VISIT_DETAIL}
         element={
           <ProtectedRoute>
             <PatientVisitDetail />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path={ROUTES.INPATIENT_DETAIL} 
+
+      <Route
+        path={ROUTES.INPATIENT_DETAIL}
         element={
           <ProtectedRoute>
             <InpatientDetailPatient />
           </ProtectedRoute>
-        } 
+        }
       />
 
-      {/* 404 Route - Harus di paling bawah */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
 
-/**
- * Main App Component
- * 
- * Root component aplikasi EMR yang menyediakan:
- * - Router setup dengan BrowserRouter
- * - AuthProvider untuk context autentikasi
- * - Routing konfigurasi untuk seluruh aplikasi
- */
 const App = () => (
   <BrowserRouter>
     <AuthProvider>

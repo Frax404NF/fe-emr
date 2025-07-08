@@ -1,6 +1,7 @@
 import axios from "axios";
+import envConfig from "../config/env";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL + '/api/auth';
+const API_URL = envConfig.API_BASE_URL + "/auth";
 
 // Create axios instance
 const apiClient = axios.create();
@@ -11,14 +12,17 @@ apiClient.interceptors.response.use(
   (error) => {
     // Log authentication errors for debugging
     if (error.response?.status === 401) {
-      console.warn('Authentication failed or token expired');
+      console.warn("Authentication failed or token expired");
     }
     return Promise.reject(error);
   }
 );
 
 const login = async (email, password) => {
-  const response = await apiClient.post(`${API_URL}/login`, { email, password });
+  const response = await apiClient.post(`${API_URL}/login`, {
+    email,
+    password,
+  });
 
   if (response.data.success && response.data.data) {
     return {

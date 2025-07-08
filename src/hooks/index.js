@@ -1,6 +1,15 @@
 /**
- * Custom Hooks Index
- * Export semua custom hooks dari satu tempat untuk kemudahan import
+ * Hooks index file
+ * Export semua custom hooks untuk digunakan di komponen
  */
 
-export { useAuth } from './useAuth';
+// Authentication hook
+export { useAuth } from "./useAuth";
+
+// Patient management hooks
+export {
+  usePatients,
+  usePatientSearch,
+  usePatientForm,
+  usePatientDetail,
+} from "./usePatients";
