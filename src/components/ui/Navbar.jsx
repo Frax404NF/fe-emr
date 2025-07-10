@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import authService from "../../services/authService";
-import logoemr from "../../assets/logoipsum-296.svg";
+import logoemr from "./assets/logoipsum-296.svg";
 
 const Navbar = () => {
   const { currentUser, logout } = useAuth();

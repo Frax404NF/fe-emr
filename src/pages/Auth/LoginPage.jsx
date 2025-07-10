@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import logoemr from "../../components/ui/assets/logoipsum-296.svg";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -22,7 +23,19 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen bg-slate-300 flex flex-col items-center justify-center px-4">
       <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full">
-        <h1 className="text-2xl font-bold text-center mb-6">Masuk ke Akun</h1>
+        {/* Logo */}
+        <div className="flex justify-center mb-4">
+          <img src={logoemr} alt="Logo EMR" width={50} height={50} />
+        </div>
+
+        {/* Judul */}
+        <h1 className="text-2xl font-bold text-center text-slate-800 mb-4">
+          EMR BcHealth
+        </h1>
+
+        <p className="text-slate-600 text-center mb-6">
+          Silakan login untuk mengakses sistem EMR
+        </p>
 
         {error && (
           <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
