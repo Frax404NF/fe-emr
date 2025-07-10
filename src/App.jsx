@@ -1,11 +1,14 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { USER_ROLES, ROUTES } from "./constants";
 
 // Page Components
-import { AdminDashboard, DoctorDashboard, NurseDashboard, PatientDashboard } from "./pages/Dashboard";
-import { InpatientDetailPatient, PatientVisitDetail } from "./pages/Patient";
+import {
+  AdminDashboard,
+  DoctorDashboard,
+  NurseDashboard,
+  PatientDashboard,
+} from "./pages/Dashboard";
 import { LoginPage, RegisterPage } from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import MainPage from "./pages/MainPage";
@@ -23,64 +26,53 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* Public Routes - Dapat diakses tanpa autentikasi */}
-      <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-      <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
       {/* Protected Routes - Memerlukan autentikasi */}
-      <Route path={ROUTES.HOME} element={ <ProtectedRoute> <MainPage /> </ProtectedRoute> }/>
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            {" "}
+            <MainPage />{" "}
+          </ProtectedRoute>
+        }
+      />
 
       {/* Role-based Protected Routes */}
       <Route
-        path={ROUTES.DOCTOR_DASHBOARD}
+        path="/dokter-view"
         element={
-          <ProtectedRoute roles={[USER_ROLES.DOCTOR]}>
+          <ProtectedRoute roles={["DOCTOR"]}>
             <DoctorDashboard />
           </ProtectedRoute>
         }
       />
 
       <Route
-        path={ROUTES.NURSE_DASHBOARD}
+        path="/nurse-view"
         element={
-          <ProtectedRoute roles={[USER_ROLES.NURSE]}>
+          <ProtectedRoute roles={["NURSE"]}>
             <NurseDashboard />
           </ProtectedRoute>
         }
       />
 
       <Route
-        path={ROUTES.PATIENT_DASHBOARD}
+        path="/patient-view"
         element={
-          <ProtectedRoute roles={[USER_ROLES.PATIENT]}>
+          <ProtectedRoute roles={["PATIENT"]}>
             <PatientDashboard />
           </ProtectedRoute>
         }
       />
 
       <Route
-        path={ROUTES.ADMIN_DASHBOARD}
+        path="/admin-view"
         element={
-          <ProtectedRoute roles={[USER_ROLES.ADMIN]}>
+          <ProtectedRoute roles={["ADMIN"]}>
             <AdminDashboard />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* General Protected Routes */}
-      <Route
-        path={ROUTES.VISIT_DETAIL}
-        element={
-          <ProtectedRoute>
-            <PatientVisitDetail />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path={ROUTES.INPATIENT_DETAIL}
-        element={
-          <ProtectedRoute>
-            <InpatientDetailPatient />
           </ProtectedRoute>
         }
       />
