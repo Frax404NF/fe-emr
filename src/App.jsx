@@ -13,6 +13,11 @@ import { LoginPage, RegisterPage } from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import MainPage from "./pages/MainPage";
 
+// Encounter Pages
+import EncounterDashboard from "./pages/Encounter/EncounterDashboard";
+import CreateEncounterPage from "./pages/Encounter/CreateEncounterPage";
+import EncounterDetailPage from "./pages/Encounter/EncounterDetailPage";
+
 // Styles
 import "./index.css";
 
@@ -73,6 +78,34 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute roles={["ADMIN"]}>
             <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Encounter Management Routes - Accessible by DOCTOR and NURSE */}
+      <Route
+        path="/encounter-dashboard"
+        element={
+          <ProtectedRoute roles={["DOCTOR", "NURSE"]}>
+            <EncounterDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/create-encounter"
+        element={
+          <ProtectedRoute roles={["DOCTOR", "NURSE"]}>
+            <CreateEncounterPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/encounter/:encounterId"
+        element={
+          <ProtectedRoute roles={["DOCTOR", "NURSE"]}>
+            <EncounterDetailPage />
           </ProtectedRoute>
         }
       />

@@ -375,7 +375,7 @@ const Pagination = ({ pagination, onPageChange }) => (
               />
             </svg>
           </button>
-          
+
           {[...Array(pagination.totalPages)].map((_, index) => {
             const pageNumber = index + 1;
             return (
