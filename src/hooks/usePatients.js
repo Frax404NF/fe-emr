@@ -2,12 +2,17 @@ import { useState, useEffect, useCallback } from 'react';
 import patientService from '../services/patientService';
 
 /**
+ * File yang berisi kumpulan hooks untuk manajemen pasien
+ * Disatukan untuk kemudahan penggunaan dan pengembangan
+ */
+
+/**
  * Hook untuk manajemen daftar pasien dengan pagination
  * @param {number} initialPage - Halaman awal
  * @param {number} initialLimit - Limit per halaman
  * @returns {Object} State dan functions untuk manajemen pasien
  */
-export const usePatients = (initialPage = 1, initialLimit = 20) => {
+const usePatients = (initialPage = 1, initialLimit = 20) => {
   const [patients, setPatients] = useState([]);
   const [pagination, setPagination] = useState({
     page: initialPage,
@@ -65,7 +70,7 @@ export const usePatients = (initialPage = 1, initialLimit = 20) => {
  * Hook untuk pencarian pasien
  * @returns {Object} State dan functions untuk pencarian pasien
  */
-export const usePatientSearch = () => {
+const usePatientSearch = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState(null);
@@ -109,7 +114,7 @@ export const usePatientSearch = () => {
  * @param {Object} initialData - Data awal untuk form
  * @returns {Object} State dan functions untuk form pasien
  */
-export const usePatientForm = (initialData = null) => {
+const usePatientForm = (initialData = null) => {
   const [formData, setFormData] = useState(
     initialData || {
       patient_name: '',
@@ -235,7 +240,7 @@ export const usePatientForm = (initialData = null) => {
  * @param {number} patientId - ID pasien
  * @returns {Object} State dan functions untuk detail pasien
  */
-export const usePatientDetail = (patientId) => {
+const usePatientDetail = (patientId) => {
   const [patient, setPatient] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -270,4 +275,12 @@ export const usePatientDetail = (patientId) => {
     error,
     refreshPatient,
   };
+};
+
+// Ekspor semua hooks dalam satu object
+export {
+  usePatients,
+  usePatientSearch,
+  usePatientForm,
+  usePatientDetail
 };
