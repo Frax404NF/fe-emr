@@ -13,7 +13,6 @@ const EncounterDashboard = () => {
     loading,
     error,
     fetchActiveEncounters,
-    updateEncounterStatus,
     clearError,
   } = useEncounter();
 
@@ -66,25 +65,6 @@ const EncounterDashboard = () => {
       default:
         return "bg-gray-100 text-gray-800";
     }
-  };
-
-  const getNextStatusOptions = (currentStatus) => {
-    const transitions = {
-      TRIAGE: ["ONGOING"],
-      ONGOING: ["OBSERVATION", "DISPOSITION"],
-      OBSERVATION: ["ONGOING", "DISPOSITION"],
-      DISPOSITION: ["DISCHARGED", "ADMITTED"],
-    };
-    return transitions[currentStatus] || [];
-  };
-
-  const canUserUpdateStatus = (encounter) => {
-    if (!currentUser) return false;
-    if (currentUser.role === "DOCTOR") return true;
-    if (currentUser.role === "NURSE") {
-      return !["DISCHARGED", "ADMITTED"].includes(encounter.status);
-    }
-    return false;
   };
 
   // Show loading while checking auth
@@ -400,6 +380,7 @@ const EncounterDashboard = () => {
                             Lihat Detail Kunjungan
                           </button>
                         </div>
+
                       </div>
                     </div>
                   ))}
