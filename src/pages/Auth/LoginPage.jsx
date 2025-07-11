@@ -1,22 +1,22 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
-import logoemr from "../../components/ui/assets/logoipsum-296.svg";
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import logoemr from '../../components/ui/assets/logoipsum-296.svg';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
       await login(email, password);
-      navigate("/"); // Redirect ke halaman utama setelah login
+      navigate('/'); // Redirect ke halaman utama setelah login
     } catch (err) {
-      setError("Login gagal. Periksa email dan password Anda.");
+      setError('Login gagal. Periksa email dan password Anda.');
     }
   };
 
@@ -56,7 +56,7 @@ const LoginPage = () => {
               type="email"
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               required
             />
           </div>
@@ -73,7 +73,7 @@ const LoginPage = () => {
               type="password"
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               required
             />
           </div>
@@ -88,7 +88,7 @@ const LoginPage = () => {
 
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
-            Belum punya akun?{" "}
+            Belum punya akun?{' '}
             <Link to="/register" className="text-blue-600 hover:underline">
               Daftar di sini
             </Link>

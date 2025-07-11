@@ -1,8 +1,8 @@
-import { Navigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
-const ProtectedRoute = (props) => {
-  const { children, roles = null, redirectTo = "/login" } = props;
+const ProtectedRoute = props => {
+  const { children, roles = null, redirectTo = '/login' } = props;
 
   const { currentUser, isLoading } = useAuth();
 

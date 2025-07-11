@@ -1,34 +1,34 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
-import logoemr from "../../components/ui/assets/logoipsum-296.svg";
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import logoemr from '../../components/ui/assets/logoipsum-296.svg';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    staff_name: "",
-    role: "NURSE",
-    specialization: "",
+    email: '',
+    password: '',
+    staff_name: '',
+    role: 'NURSE',
+    specialization: '',
   });
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const { signup } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
       await signup(formData);
       setSuccess(true);
-      setTimeout(() => navigate("/login"), 3000);
+      setTimeout(() => navigate('/login'), 3000);
     } catch (err) {
-      setError("Registrasi gagal. Silakan coba lagi.");
+      setError('Registrasi gagal. Silakan coba lagi.');
     }
   };
 
@@ -134,7 +134,7 @@ const RegisterPage = () => {
             </select>
           </div>
 
-          {formData.role === "DOCTOR" && (
+          {formData.role === 'DOCTOR' && (
             <div className="mb-4">
               <label
                 htmlFor="specialization"
@@ -164,7 +164,7 @@ const RegisterPage = () => {
 
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
-            Sudah punya akun?{" "}
+            Sudah punya akun?{' '}
             <Link to="/login" className="text-blue-600 hover:underline">
               Masuk di sini
             </Link>
