@@ -19,7 +19,7 @@ import CreateEncounterPage from './pages/Encounter/CreateEncounterPage';
 import EncounterDetailPage from './pages/Encounter/EncounterDetailPage';
 
 // Patient Management Pages
-import PatientManagementPage from './pages/PatientManagementPage';
+import PatientManagementPage from './pages/Patient/PatientManagementPage';
 
 // Styles
 import './index.css';

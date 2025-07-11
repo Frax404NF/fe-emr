@@ -6,8 +6,8 @@ import { isActiveEncounterStatus, getStatusLabel } from '../../utils/encounterUt
 import NakesDashboardLayout from '../../layouts/NakesDashboardLayout';
 import DashboardCard from '../../components/ui/DashboardCard';
 import NotificationArea from '../../components/ui/NotificationArea';
-import PatientSelector from '../../components/PatientSelector';
-import PatientFormModal from '../../components/PatientFormModal';
+import PatientSelector from '../../components/patient/PatientSelector';
+import PatientFormModal from '../../components/patient/PatientFormModal';
 
 // Triage level options
 const TRIAGE_LEVELS = [
