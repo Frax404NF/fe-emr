@@ -112,8 +112,8 @@ const PatientFormModal = ({ isOpen, onClose, onSuccess }) => {
                 className={`text-xl font-bold ${isEmergencyMode ? 'text-red-800' : 'text-gray-900'}`}
               >
                 {isEmergencyMode
-                  ? '🚨 Pendaftaran Pasien Darurat'
-                  : '👤 Tambah Pasien Baru'}
+                  ? 'Pendaftaran Pasien Darurat'
+                  : 'Tambah Pasien Baru'}
               </h2>
               <p
                 className={`text-sm mt-1 ${isEmergencyMode ? 'text-red-600' : 'text-gray-600'}`}
