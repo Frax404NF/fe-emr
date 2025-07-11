@@ -2,9 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useEncounter } from '../../hooks/useEncounter';
+import { isActiveEncounterStatus, getStatusLabel } from '../../utils/encounterUtils';
 import NakesDashboardLayout from '../../layouts/NakesDashboardLayout';
 import DashboardCard from '../../components/ui/DashboardCard';
 import NotificationArea from '../../components/ui/NotificationArea';
+import PatientSelector from '../../components/PatientSelector';
+import PatientFormModal from '../../components/PatientFormModal';
 
 // Triage level options
 const TRIAGE_LEVELS = [
@@ -17,11 +20,11 @@ const TRIAGE_LEVELS = [
 const CreateEncounterPage = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const { startEncounter, loading: encounterLoading } = useEncounter();
+  const { startEncounter, checkActiveEncounter, loading: encounterLoading } = useEncounter();
 
   // Form state
   const [formData, setFormData] = useState({
-    patient_id: '',
+    selectedPatient: null,
     chief_complaint: '',
     triage_level: '',
     initial_vitals: {
@@ -37,6 +40,9 @@ const CreateEncounterPage = () => {
 
   const [errors, setErrors] = useState({});
   const [notification, setNotification] = useState(null);
+  const [activeEncounter, setActiveEncounter] = useState(null);
+  const [checkingActiveEncounter, setCheckingActiveEncounter] = useState(false);
+  const [showPatientFormModal, setShowPatientFormModal] = useState(false);
 
   // Navigation handlers
   const handleBackToDashboard = () => {
@@ -47,10 +53,10 @@ const CreateEncounterPage = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.patient_id.trim()) {
-      newErrors.patient_id = 'Patient ID wajib diisi';
-    } else if (!/^\d+$/.test(formData.patient_id.trim())) {
-      newErrors.patient_id = 'Patient ID harus berupa angka';
+    if (!formData.selectedPatient) {
+      newErrors.selectedPatient = 'Pasien wajib dipilih';
+    } else if (activeEncounter && isActiveEncounterStatus(activeEncounter.status)) {
+      newErrors.selectedPatient = `Pasien masih memiliki encounter aktif dengan status ${getStatusLabel(activeEncounter.status)}`;
     }
 
     if (!formData.chief_complaint.trim()) {
@@ -136,17 +142,34 @@ const CreateEncounterPage = () => {
     }
 
     try {
+      // Map vital signs to backend expected field names
       const vitalData = {};
+      const vitalMapping = {
+        'temperature': 'temperature',
+        'heart_rate': 'heart_rate',
+        'blood_pressure_systolic': 'systolic',
+        'blood_pressure_diastolic': 'diastolic',
+        'respiratory_rate': 'respiratory_rate',
+        'oxygen_saturation': 'oxygen_saturation',
+        'pain_scale': 'pain_scale'
+      };
+
       Object.entries(formData.initial_vitals).forEach(([key, value]) => {
-        if (value !== '') vitalData[key] = parseFloat(value);
+        if (value !== '' && value !== null && value !== undefined) {
+          const backendFieldName = vitalMapping[key] || key;
+          vitalData[backendFieldName] = parseFloat(value);
+        }
       });
 
       const payload = {
-        patient_id: parseInt(formData.patient_id),
+        patient_id: formData.selectedPatient.patient_id,
         chief_complaint: formData.chief_complaint.trim(),
         triage_level: formData.triage_level,
-        initial_vitals: vitalData,
+        // Only include initial_vitals if there are actual values
+        ...(Object.keys(vitalData).length > 0 && { initial_vitals: vitalData }),
       };
+
+      console.log('Payload being sent:', payload); // Debug log
 
       const newEncounter = await startEncounter(payload);
       setNotification({
@@ -171,6 +194,71 @@ const CreateEncounterPage = () => {
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
+  };
+
+  const handlePatientSelect = async (patient) => {
+    setFormData(prev => ({ ...prev, selectedPatient: patient }));
+    if (errors.selectedPatient) setErrors(prev => ({ ...prev, selectedPatient: '' }));
+    
+    // Clear previous active encounter state
+    setActiveEncounter(null);
+    
+    if (patient) {
+      setCheckingActiveEncounter(true);
+      try {
+        const activeEnc = await checkActiveEncounter(patient.patient_id);
+        if (activeEnc && isActiveEncounterStatus(activeEnc.status)) {
+          setActiveEncounter(activeEnc);
+          setNotification({
+            type: 'warning',
+            message: `Pasien ${patient.patient_name} masih memiliki encounter aktif dengan status ${getStatusLabel(activeEnc.status)}. Selesaikan encounter tersebut terlebih dahulu.`
+          });
+        } else {
+          // Clear active encounter if status is not active (e.g., DISCHARGED, ADMITTED)
+          setActiveEncounter(null);
+        }
+      } catch (error) {
+        console.error('Error checking active encounter:', error);
+        // For MVP: Don't block the workflow if active encounter check fails
+        // Just log the error and allow encounter creation
+        setActiveEncounter(null);
+        console.warn('Active encounter check failed, allowing encounter creation to proceed');
+      } finally {
+        setCheckingActiveEncounter(false);
+      }
+    }
+  };
+
+  // Handle new patient registration
+  const handleOpenPatientFormModal = () => {
+    setShowPatientFormModal(true);
+  };
+
+  const handleClosePatientFormModal = () => {
+    setShowPatientFormModal(false);
+  };
+
+  const handlePatientCreated = (newPatient) => {
+    // Automatically select the newly created patient
+    setFormData(prev => ({ ...prev, selectedPatient: newPatient }));
+    setShowPatientFormModal(false);
+    setNotification({
+      type: 'success',
+      message: `Pasien ${newPatient.patient_name} berhasil didaftarkan dan dipilih.`
+    });
+  };
+
+  // Helper function to calculate age
+  const calculateAge = (dateOfBirth) => {
+    if (!dateOfBirth) return 'N/A';
+    const today = new Date();
+    const birth = new Date(dateOfBirth);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
   };
 
   const handleVitalChange = (field, value) => {
@@ -218,7 +306,7 @@ const CreateEncounterPage = () => {
             <button
               onClick={handleBackToDashboard}
               className="flex items-center text-blue-600 hover:text-blue-800 transition-colors"
-              aria-label="Kembali ke dashboard"
+              aria-label="Kembali ke halaman utama"
             >
               <svg
                 className="w-5 h-5"
@@ -234,7 +322,7 @@ const CreateEncounterPage = () => {
                   d="M15 19l-7-7 7-7"
                 />
               </svg>
-              <span className="ml-2">Kembali ke dashboard</span>
+              <span className="ml-2">Kembali ke halaman utama</span>
             </button>
           </div>
         </div>
@@ -243,29 +331,115 @@ const CreateEncounterPage = () => {
         <DashboardCard>
           <div className="p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Buat Encounter Baru
+              Buat Kunjungan Baru
             </h2>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Patient ID */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Patient ID <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.patient_id}
-                  onChange={e => handleChange('patient_id', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.patient_id ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="Masukkan ID pasien"
-                />
-                {errors.patient_id && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.patient_id}
+              {/* Patient Selection */}
+              <PatientSelector
+                selectedPatient={formData.selectedPatient}
+                onPatientSelect={handlePatientSelect}
+                error={errors.selectedPatient}
+              />
+
+              {/* Add New Patient Button */}
+              <div className="flex justify-between items-center p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div>
+                  <p className="text-sm font-medium text-blue-800">
+                    Pasien Tidak Ditemukan?
                   </p>
-                )}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleOpenPatientFormModal}
+                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors flex items-center space-x-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  <span>Daftar Pasien Baru</span>
+                </button>
               </div>
+
+              {/* Selected Patient Info */}
+              {formData.selectedPatient && (
+                <div className={`border rounded-lg p-4 ${
+                  activeEncounter && isActiveEncounterStatus(activeEncounter.status)
+                    ? 'bg-red-50 border-red-200' 
+                    : 'bg-blue-50 border-blue-200'
+                }`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className={`text-sm font-medium ${
+                      activeEncounter && isActiveEncounterStatus(activeEncounter.status) ? 'text-red-800' : 'text-blue-800'
+                    }`}>
+                      {activeEncounter && isActiveEncounterStatus(activeEncounter.status) ? '⚠️ Pasien Memiliki Encounter Aktif' : 'Informasi Pasien Terpilih'}
+                    </h4>
+                    {checkingActiveEncounter && (
+                      <div className="flex items-center text-xs text-gray-500">
+                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-gray-500 mr-1"></div>
+                        Memeriksa encounter aktif...
+                      </div>
+                    )}
+                  </div>
+
+                  {activeEncounter && isActiveEncounterStatus(activeEncounter.status) && (
+                    <div className="mb-3 p-3 bg-red-100 border border-red-300 rounded-md">
+                      <p className="text-sm font-medium text-red-800">
+                        Encounter ID: {activeEncounter.encounter_id}
+                      </p>
+                      <p className="text-sm text-red-700">
+                        Status: <span className="font-medium">{getStatusLabel(activeEncounter.status)}</span>
+                      </p>
+                      <p className="text-sm text-red-700">
+                        Keluhan: {activeEncounter.chief_complaint}
+                      </p>
+                      <p className="text-xs text-red-600 mt-1">
+                        Selesaikan kunjungan ini terlebih dahulu sebelum membuat kunjungan baru.
+                      </p>
+                      <div className="mt-2 text-xs text-red-500">
+                        <p className="font-medium">Status yang memblokir kunjungan baru:</p>
+                        <p>• TRIAGE, ONGOING, OBSERVATION, DISPOSITION</p>
+                        <p className="mt-1 font-medium">Status yang mengizinkan kunjungan baru:</p>
+                        <p>• DISCHARGED (Pulang), ADMITTED (Rawat Inap)</p>
+                      </div>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <span className="font-medium text-blue-700">Nama:</span>{' '}
+                      <span className="text-blue-900">{formData.selectedPatient.patient_name}</span>
+                    </div>
+                    <div>
+                      <span className="font-medium text-blue-700">NIK:</span>{' '}
+                      <span className="text-blue-900">{formData.selectedPatient.NIK}</span>
+                    </div>
+                    <div>
+                      <span className="font-medium text-blue-700">Umur:</span>{' '}
+                      <span className="text-blue-900">
+                        {calculateAge(formData.selectedPatient.date_of_birth)} tahun
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-medium text-blue-700">Jenis Kelamin:</span>{' '}
+                      <span className="text-blue-900">
+                        {formData.selectedPatient.gender === 'LAKI_LAKI' ? 'Laki-laki' : 'Perempuan'}
+                      </span>
+                    </div>
+                    {formData.selectedPatient.blood_type && (
+                      <div>
+                        <span className="font-medium text-blue-700">Golongan Darah:</span>{' '}
+                        <span className="text-blue-900">{formData.selectedPatient.blood_type}</span>
+                      </div>
+                    )}
+                    {formData.selectedPatient.patient_history_of_allergies && (
+                      <div className="md:col-span-2">
+                        <span className="font-medium text-red-700">⚠️ Riwayat Alergi:</span>{' '}
+                        <span className="text-red-800">{formData.selectedPatient.patient_history_of_allergies}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
 
               {/* Chief Complaint */}
               <div>
@@ -417,10 +591,14 @@ const CreateEncounterPage = () => {
               <div className="flex space-x-4 pt-6">
                 <button
                   type="submit"
-                  disabled={encounterLoading}
-                  className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+                  disabled={encounterLoading || (activeEncounter && isActiveEncounterStatus(activeEncounter.status)) || checkingActiveEncounter}
+                  className={`flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
+                    activeEncounter && isActiveEncounterStatus(activeEncounter.status)
+                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
-                  {encounterLoading ? (
+                  {encounterLoading || checkingActiveEncounter ? (
                     <span className="flex items-center justify-center">
                       <svg
                         className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
@@ -442,10 +620,12 @@ const CreateEncounterPage = () => {
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                         ></path>
                       </svg>
-                      Membuat...
+                      {encounterLoading ? 'Membuat...' : 'Memeriksa...'}
                     </span>
+                  ) : activeEncounter && isActiveEncounterStatus(activeEncounter.status) ? (
+                    'Encounter Aktif Ditemukan'
                   ) : (
-                    'Buat Encounter'
+                    'Buat Kunjungan'
                   )}
                 </button>
                 <button
@@ -460,6 +640,13 @@ const CreateEncounterPage = () => {
           </div>
         </DashboardCard>
       </div>
+
+      {/* Patient Form Modal */}
+      <PatientFormModal
+        isOpen={showPatientFormModal}
+        onClose={handleClosePatientFormModal}
+        onSuccess={handlePatientCreated}
+      />
     </NakesDashboardLayout>
   );
 };
