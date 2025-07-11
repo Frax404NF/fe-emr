@@ -1,18 +1,20 @@
-import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
-import { useEncounter } from "../../hooks/useEncounter";
-import { calculateEncounterStats } from "../../utils/encounterUtils";
-import NakesDashboardLayout from "../../layouts/NakesDashboardLayout";
-import DashboardCard from "../../components/ui/DashboardCard";
-import NotificationArea from "../../components/ui/NotificationArea";
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import { useEncounter } from '../../hooks/useEncounter';
+import { calculateEncounterStats } from '../../utils/encounterUtils';
+import NakesDashboardLayout from '../../layouts/NakesDashboardLayout';
+import DashboardCard from '../../components/ui/DashboardCard';
+import NotificationArea from '../../components/ui/NotificationArea';
 
 // Komponen terpisah
 const StatCard = ({ title, subtitle, value, bgColor, circleColor }) => (
   <div className={`${bgColor} p-4 rounded-lg`}>
     <div className="flex items-center">
       <div className="flex-shrink-0">
-        <div className={`w-8 h-8 ${circleColor} rounded-full flex items-center justify-center`}>
+        <div
+          className={`w-8 h-8 ${circleColor} rounded-full flex items-center justify-center`}
+        >
           <span className="text-white text-sm font-bold">{value}</span>
         </div>
       </div>
@@ -35,21 +37,22 @@ const NurseDashboard = () => {
     try {
       await fetchActiveEncounters();
     } catch (error) {
-      console.error("Failed to load encounters:", error);
-      setNotifications((prev) => [
+      console.error('Failed to load encounters:', error);
+      setNotifications(prev => [
         ...prev,
         {
-          type: "error",
-          message: error.message === "Authorization token required" 
-            ? "Sesi telah berakhir. Silakan login kembali."
-            : "Gagal memuat data encounter",
+          type: 'error',
+          message:
+            error.message === 'Authorization token required'
+              ? 'Sesi telah berakhir. Silakan login kembali.'
+              : 'Gagal memuat data encounter',
           id: `${Date.now()}-${Math.random()}`,
         },
       ]);
-      
+
       // If auth error, redirect to login
-      if (error.message === "Authorization token required") {
-        setTimeout(() => navigate("/login"), 2000);
+      if (error.message === 'Authorization token required') {
+        setTimeout(() => navigate('/login'), 2000);
       }
     }
   }, [fetchActiveEncounters, navigate]);
@@ -61,29 +64,29 @@ const NurseDashboard = () => {
   // Check authentication
   useEffect(() => {
     if (!currentUser) {
-      navigate("/login");
+      navigate('/login');
       return;
     }
   }, [currentUser, navigate]);
 
   // Quick Action Handlers dengan navigation
   const handleCreateEncounter = useCallback(() => {
-    navigate("/create-encounter");
+    navigate('/create-encounter');
   }, [navigate]);
 
   const handleViewEncounters = useCallback(() => {
-    navigate("/encounter-dashboard");
+    navigate('/encounter-dashboard');
   }, [navigate]);
 
   const handleViewPatients = useCallback(() => {
-    navigate("/patient-management");
+    navigate('/patient-management');
   }, [navigate]);
 
   // Auto-dismiss notifications
   useEffect(() => {
     if (notifications.length > 0) {
       const timer = setTimeout(() => {
-        setNotifications((prev) => prev.slice(1));
+        setNotifications(prev => prev.slice(1));
       }, 5000);
       return () => clearTimeout(timer);
     }

@@ -1,6 +1,6 @@
-import { useAuth } from "../../hooks/useAuth";
-import NakesDashboardLayout from "../../layouts/NakesDashboardLayout";
-import DashboardCard from "../../components/ui/DashboardCard";
+import { useAuth } from '../../hooks/useAuth';
+import NakesDashboardLayout from '../../layouts/NakesDashboardLayout';
+import DashboardCard from '../../components/ui/DashboardCard';
 
 const AdminDashboard = () => {
   const { currentUser } = useAuth();

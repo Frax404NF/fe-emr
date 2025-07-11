@@ -1,5 +1,5 @@
-import PatientDashboardLayout from "../../layouts/PatientDashboardLayout";
-import DashboardCard from "../../components/ui/DashboardCard";
+import PatientDashboardLayout from '../../layouts/PatientDashboardLayout';
+import DashboardCard from '../../components/ui/DashboardCard';
 
 const PatientDashboard = () => {
   return (
@@ -8,7 +8,8 @@ const PatientDashboard = () => {
         <h2 className="text-2xl px-4">Welcome, Pasien C!</h2>
         <div className="p-4">
           <p className="text-gray-700">
-            Selamat datang di dashboard pasien. Di sini Anda dapat melihat riwayat rekam medis anda, dan melakukan tugas lainnya.
+            Selamat datang di dashboard pasien. Di sini Anda dapat melihat
+            riwayat rekam medis anda, dan melakukan tugas lainnya.
           </p>
         </div>
         <div className="p-4">
