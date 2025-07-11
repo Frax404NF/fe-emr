@@ -1,18 +1,18 @@
-import axios from "axios";
-import envConfig from "../config/env";
+import axios from 'axios';
+import envConfig from '../config/env';
 
-const API_URL = envConfig.API_BASE_URL + "/auth";
+const API_URL = envConfig.API_BASE_URL + '/auth';
 
 // Create axios instance
 const apiClient = axios.create();
 
 // Basic response interceptor for error handling
 apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
+  response => response,
+  error => {
     // Log authentication errors for debugging
     if (error.response?.status === 401) {
-      console.warn("Authentication failed or token expired");
+      console.warn('Authentication failed or token expired');
     }
     return Promise.reject(error);
   }
@@ -32,20 +32,20 @@ const login = async (email, password) => {
     };
   }
 
-  throw new Error(response.data.message || "Login failed");
+  throw new Error(response.data.message || 'Login failed');
 };
 
-const signup = async (staffData) => {
+const signup = async staffData => {
   const response = await apiClient.post(`${API_URL}/register`, staffData);
 
   if (response.data.success) {
     return response.data.data;
   }
 
-  throw new Error(response.data.message || "Registration failed");
+  throw new Error(response.data.message || 'Registration failed');
 };
 
-const logout = async (token) => {
+const logout = async token => {
   const response = await apiClient.post(`${API_URL}/signout`, null, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -55,7 +55,7 @@ const logout = async (token) => {
   return response.data;
 };
 
-const getProfile = async (token) => {
+const getProfile = async token => {
   const response = await apiClient.get(`${API_URL}/profile`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -66,7 +66,7 @@ const getProfile = async (token) => {
     return response.data.data;
   }
 
-  throw new Error(response.data.message || "Failed to fetch profile");
+  throw new Error(response.data.message || 'Failed to fetch profile');
 };
 
 export default {

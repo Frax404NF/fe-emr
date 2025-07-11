@@ -1,5 +1,5 @@
-import axios from "axios";
-import envConfig from "../config/env";
+import axios from 'axios';
+import envConfig from '../config/env';
 
 const API_BASE_URL = envConfig.API_BASE_URL;
 
@@ -17,24 +17,24 @@ class PatientService {
 
     // Add request interceptor untuk token
     this.api.interceptors.request.use(
-      (config) => {
+      config => {
         const token = this.getToken();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
       },
-      (error) => Promise.reject(error)
+      error => Promise.reject(error)
     );
 
     // Add response interceptor untuk error handling
     this.api.interceptors.response.use(
-      (response) => response,
-      (error) => {
+      response => response,
+      error => {
         if (error.response?.status === 401) {
           // Token expired - redirect to login
-          localStorage.removeItem("user");
-          window.location.href = "/login";
+          localStorage.removeItem('user');
+          window.location.href = '/login';
         }
         return Promise.reject(error);
       }
@@ -43,7 +43,7 @@ class PatientService {
 
   getToken() {
     try {
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
       return user.access_token;
     } catch {
       return null;
@@ -57,7 +57,7 @@ class PatientService {
    */
   async createPatient(patientData) {
     try {
-      const response = await this.api.post("/patients", patientData);
+      const response = await this.api.post('/patients', patientData);
       return response.data;
     } catch (error) {
       throw this.handleError(error);
@@ -72,7 +72,7 @@ class PatientService {
    */
   async getPatients(page = 1, limit = 20) {
     try {
-      const response = await this.api.get("/patients", {
+      const response = await this.api.get('/patients', {
         params: { page, limit },
       });
       return response.data;
@@ -111,6 +111,24 @@ class PatientService {
   }
 
   /**
+   * Update pasien darurat ke pasien reguler dengan data lengkap
+   * @param {number} patientId - ID pasien
+   * @param {Object} completeData - Data lengkap pasien
+   * @returns {Promise<Object>} Response dengan data pasien yang diupdate
+   */
+  async updateEmergencyPatientToRegular(patientId, completeData) {
+    try {
+      const response = await this.api.put(
+        `/patients/${patientId}/emergency-to-regular`,
+        completeData
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
    * Cari pasien berdasarkan NIK atau nama
    * @param {string} searchTerm - Term pencarian (min 3 karakter)
    * @returns {Promise<Object>} Response dengan hasil pencarian
@@ -121,7 +139,7 @@ class PatientService {
     }
 
     try {
-      const response = await this.api.get("/patients/search", {
+      const response = await this.api.get('/patients/search', {
         params: { search: searchTerm },
       });
       return response.data;
@@ -153,7 +171,7 @@ class PatientService {
     if (error.response) {
       // Server responded with error status
       const message =
-        error.response.data?.message || "Terjadi kesalahan pada server";
+        error.response.data?.message || 'Terjadi kesalahan pada server';
       const newError = new Error(message);
       newError.status = error.response.status;
       newError.data = error.response.data;
@@ -161,12 +179,12 @@ class PatientService {
     } else if (error.request) {
       // Network error
       return new Error(
-        "Gagal terhubung ke server. Periksa koneksi internet Anda."
+        'Gagal terhubung ke server. Periksa koneksi internet Anda.'
       );
     } else {
       // Other error
       return new Error(
-        error.message || "Terjadi kesalahan yang tidak diketahui"
+        error.message || 'Terjadi kesalahan yang tidak diketahui'
       );
     }
   }
