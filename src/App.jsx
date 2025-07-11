@@ -105,7 +105,7 @@ const AppRoutes = () => {
       />
 
       <Route
-        path="/encounter/:encounterId"
+        path="/encounters/:encounterId"
         element={
           <ProtectedRoute roles={['DOCTOR', 'NURSE']}>
             <EncounterDetailPage />
