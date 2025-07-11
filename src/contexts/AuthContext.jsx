@@ -1,13 +1,18 @@
-import { useState, useEffect } from "react";
-import authService from "../services/authService";
-import { AuthContext, getStoredUser, setStoredUser, removeStoredUser } from "../utils/authUtils";
+import { useState, useEffect } from 'react';
+import authService from '../services/authService';
+import {
+  AuthContext,
+  getStoredUser,
+  setStoredUser,
+  removeStoredUser,
+} from '../utils/authUtils';
 
 /**
  * AuthProvider Component
- * 
+ *
  * Provider component yang menyediakan authentication context untuk seluruh aplikasi.
  * Mengelola state user login, loading, dan menyediakan functions untuk auth operations.
- * 
+ *
  * @param {Object} props - Component props
  * @param {React.ReactNode} props.children - Child components yang akan wrapped dengan AuthProvider
  */
@@ -31,7 +36,7 @@ export function AuthProvider({ children }) {
     return userData;
   };
 
-  const signup = async (staffData) => {
+  const signup = async staffData => {
     const user = await authService.signup(staffData);
     return user;
   };
@@ -45,7 +50,7 @@ export function AuthProvider({ children }) {
       removeStoredUser();
       // Note: Navigation should be handled by the component calling logout
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error('Logout error:', error);
     }
   };
 

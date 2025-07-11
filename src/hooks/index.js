@@ -4,7 +4,7 @@
  */
 
 // Authentication hook
-export { useAuth } from "./useAuth";
+export { useAuth } from './useAuth';
 
 // Patient management hooks
 export {
@@ -12,4 +12,4 @@ export {
   usePatientSearch,
   usePatientForm,
   usePatientDetail,
-} from "./usePatients";
+} from './usePatients';

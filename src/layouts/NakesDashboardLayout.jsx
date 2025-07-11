@@ -1,4 +1,4 @@
-import Navbar from "../components/ui/Navbar";
+import Navbar from '../components/ui/Navbar';
 
 /**
  * NakesDashboardLayout - Layout untuk medical staff (doctors/nurses)

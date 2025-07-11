@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 /**
  * NotificationArea Component
@@ -14,20 +14,20 @@ const NotificationArea = ({ notifications, setNotifications }) => {
 
   return (
     <div className="fixed top-4 right-4 z-50 space-y-2">
-      {notifications.map((notification) => (
+      {notifications.map(notification => (
         <div
           key={notification.id}
           className={`p-4 rounded-lg shadow-lg border-l-4 ${
-            notification.type === "success"
-              ? "bg-green-50 border-green-500 text-green-800"
-              : notification.type === "error"
-              ? "bg-red-50 border-red-500 text-red-800"
-              : "bg-blue-50 border-blue-500 text-blue-800"
+            notification.type === 'success'
+              ? 'bg-green-50 border-green-500 text-green-800'
+              : notification.type === 'error'
+                ? 'bg-red-50 border-red-500 text-red-800'
+                : 'bg-blue-50 border-blue-500 text-blue-800'
           }`}
         >
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              {notification.type === "success" && (
+              {notification.type === 'success' && (
                 <svg
                   className="w-5 h-5 text-green-500"
                   fill="currentColor"
@@ -40,7 +40,7 @@ const NotificationArea = ({ notifications, setNotifications }) => {
                   />
                 </svg>
               )}
-              {notification.type === "error" && (
+              {notification.type === 'error' && (
                 <svg
                   className="w-5 h-5 text-red-500"
                   fill="currentColor"
@@ -53,7 +53,7 @@ const NotificationArea = ({ notifications, setNotifications }) => {
                   />
                 </svg>
               )}
-              {notification.type === "info" && (
+              {notification.type === 'info' && (
                 <svg
                   className="w-5 h-5 text-blue-500"
                   fill="currentColor"
@@ -72,8 +72,8 @@ const NotificationArea = ({ notifications, setNotifications }) => {
             </div>
             <button
               onClick={() =>
-                setNotifications((prev) =>
-                  prev.filter((n) => n.id !== notification.id)
+                setNotifications(prev =>
+                  prev.filter(n => n.id !== notification.id)
                 )
               }
               className="ml-4 text-gray-400 hover:text-gray-600"
