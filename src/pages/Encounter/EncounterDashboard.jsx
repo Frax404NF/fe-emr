@@ -1,31 +1,26 @@
-import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
-import { useEncounter } from "../../hooks/useEncounter";
-import Navbar from "../../components/ui/Navbar";
-import DashboardCard from "../../components/ui/DashboardCard";
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import { useEncounter } from '../../hooks/useEncounter';
+import Navbar from '../../components/ui/Navbar';
+import DashboardCard from '../../components/ui/DashboardCard';
 
 const EncounterDashboard = () => {
   const navigate = useNavigate();
   const { currentUser, loading: authLoading } = useAuth();
-  const {
-    encounters,
-    loading,
-    error,
-    fetchActiveEncounters,
-    clearError,
-  } = useEncounter();
+  const { encounters, loading, error, fetchActiveEncounters, clearError } =
+    useEncounter();
 
-  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState('');
 
   const handleBackToDashboard = () => {
     // Navigate back to appropriate dashboard based on user role
-    if (currentUser?.role === "DOCTOR") {
-      navigate("/dokter-view", { replace: true });
-    } else if (currentUser?.role === "NURSE") {
-      navigate("/nurse-view", { replace: true });
+    if (currentUser?.role === 'DOCTOR') {
+      navigate('/dokter-view', { replace: true });
+    } else if (currentUser?.role === 'NURSE') {
+      navigate('/nurse-view', { replace: true });
     } else {
-      navigate("/dashboard", { replace: true });
+      navigate('/dashboard', { replace: true });
     }
   };
 
@@ -44,26 +39,26 @@ const EncounterDashboard = () => {
     fetchData();
   };
 
-  const handleViewDetails = (encounterId) => {
+  const handleViewDetails = encounterId => {
     navigate(`/encounter/${encounterId}`);
   };
 
-  const getStatusBadgeColor = (status) => {
+  const getStatusBadgeColor = status => {
     switch (status) {
-      case "TRIAGE":
-        return "bg-yellow-100 text-yellow-800";
-      case "ONGOING":
-        return "bg-blue-100 text-blue-800";
-      case "OBSERVATION":
-        return "bg-purple-100 text-purple-800";
-      case "DISPOSITION":
-        return "bg-green-100 text-green-800";
-      case "DISCHARGED":
-        return "bg-gray-100 text-gray-800";
-      case "ADMITTED":
-        return "bg-indigo-100 text-indigo-800";
+      case 'TRIAGE':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'ONGOING':
+        return 'bg-blue-100 text-blue-800';
+      case 'OBSERVATION':
+        return 'bg-purple-100 text-purple-800';
+      case 'DISPOSITION':
+        return 'bg-green-100 text-green-800';
+      case 'DISCHARGED':
+        return 'bg-gray-100 text-gray-800';
+      case 'ADMITTED':
+        return 'bg-indigo-100 text-indigo-800';
       default:
-        return "bg-gray-100 text-gray-800";
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -78,8 +73,8 @@ const EncounterDashboard = () => {
   }
 
   // Simple role check - redirect to access denied if not authorized
-  if (!currentUser || !["DOCTOR", "NURSE"].includes(currentUser.role)) {
-    navigate("/access-denied", { replace: true });
+  if (!currentUser || !['DOCTOR', 'NURSE'].includes(currentUser.role)) {
+    navigate('/access-denied', { replace: true });
     return null;
   }
 
@@ -121,7 +116,7 @@ const EncounterDashboard = () => {
                 className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
               >
                 <svg
-                  className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+                  className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -133,7 +128,7 @@ const EncounterDashboard = () => {
                     d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                   />
                 </svg>
-                {loading ? "Refreshing..." : "Refresh"}
+                {loading ? 'Refreshing...' : 'Refresh'}
               </button>
             </div>
           </div>
@@ -192,10 +187,10 @@ const EncounterDashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-6 py-5">
-              {["TRIAGE", "ONGOING", "OBSERVATION", "DISPOSITION"].map(
-                (status) => {
+              {['TRIAGE', 'ONGOING', 'OBSERVATION', 'DISPOSITION'].map(
+                status => {
                   const count = encounters.filter(
-                    (e) => e.status === status
+                    e => e.status === status
                   ).length;
                   return (
                     <div
@@ -217,7 +212,7 @@ const EncounterDashboard = () => {
                             {status}
                           </p>
                           <p className="text-xs text-gray-500">
-                            {count} {count === 1 ? "encounter" : "encounters"}
+                            {count} {count === 1 ? 'encounter' : 'encounters'}
                           </p>
                         </div>
                       </div>
@@ -232,10 +227,12 @@ const EncounterDashboard = () => {
           <DashboardCard>
             <div className="p-4">
               <div className="flex items-center space-x-4">
-                <label className="text-sm font-medium text-gray-700">Filter Status:</label>
+                <label className="text-sm font-medium text-gray-700">
+                  Filter Status:
+                </label>
                 <select
                   value={selectedStatus}
-                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  onChange={e => setSelectedStatus(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Semua Status</option>
@@ -299,7 +296,7 @@ const EncounterDashboard = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {encounters.map((encounter) => (
+                  {encounters.map(encounter => (
                     <div
                       key={encounter.encounter_id}
                       className="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-all duration-200 hover:border-blue-300"
@@ -322,10 +319,10 @@ const EncounterDashboard = () => {
                           <div className="space-y-2">
                             <h4 className="text-lg font-semibold text-gray-900">
                               {encounter.patient?.patient_name ||
-                                "Unknown Patient"}
+                                'Unknown Patient'}
                             </h4>
                             <p className="text-sm text-gray-700 leading-relaxed">
-                              <span className="font-medium">Keluhan:</span>{" "}
+                              <span className="font-medium">Keluhan:</span>{' '}
                               {encounter.chief_complaint}
                             </p>
                             <div className="flex flex-wrap gap-4 text-xs text-gray-500">
@@ -345,7 +342,7 @@ const EncounterDashboard = () => {
                                 </svg>
                                 {new Date(
                                   encounter.encounter_start_time
-                                ).toLocaleString("id-ID")}
+                                ).toLocaleString('id-ID')}
                               </span>
                               {encounter.medic_staff && (
                                 <span className="flex items-center">
@@ -380,7 +377,6 @@ const EncounterDashboard = () => {
                             Lihat Detail Kunjungan
                           </button>
                         </div>
-
                       </div>
                     </div>
                   ))}

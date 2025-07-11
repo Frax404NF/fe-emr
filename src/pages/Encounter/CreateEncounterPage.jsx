@@ -1,17 +1,17 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
-import { useEncounter } from "../../hooks/useEncounter";
-import NakesDashboardLayout from "../../layouts/NakesDashboardLayout";
-import DashboardCard from "../../components/ui/DashboardCard";
-import NotificationArea from "../../components/ui/NotificationArea";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import { useEncounter } from '../../hooks/useEncounter';
+import NakesDashboardLayout from '../../layouts/NakesDashboardLayout';
+import DashboardCard from '../../components/ui/DashboardCard';
+import NotificationArea from '../../components/ui/NotificationArea';
 
 // Triage level options
 const TRIAGE_LEVELS = [
-  { value: "RED", label: "Merah (Emergensi)", color: "text-red-600" },
-  { value: "YELLOW", label: "Kuning (Urgent)", color: "text-yellow-600" },
-  { value: "GREEN", label: "Hijau (Less Urgent)", color: "text-green-600" },
-  { value: "BLACK", label: "Hitam (Non-Urgent)", color: "text-gray-600" },
+  { value: 'RED', label: 'Merah (Emergensi)', color: 'text-red-600' },
+  { value: 'YELLOW', label: 'Kuning (Urgent)', color: 'text-yellow-600' },
+  { value: 'GREEN', label: 'Hijau (Less Urgent)', color: 'text-green-600' },
+  { value: 'BLACK', label: 'Hitam (Non-Urgent)', color: 'text-gray-600' },
 ];
 
 const CreateEncounterPage = () => {
@@ -21,17 +21,17 @@ const CreateEncounterPage = () => {
 
   // Form state
   const [formData, setFormData] = useState({
-    patient_id: "",
-    chief_complaint: "",
-    triage_level: "",
+    patient_id: '',
+    chief_complaint: '',
+    triage_level: '',
     initial_vitals: {
-      temperature: "",
-      heart_rate: "",
-      blood_pressure_systolic: "",
-      blood_pressure_diastolic: "",
-      respiratory_rate: "",
-      oxygen_saturation: "",
-      pain_scale: "",
+      temperature: '',
+      heart_rate: '',
+      blood_pressure_systolic: '',
+      blood_pressure_diastolic: '',
+      respiratory_rate: '',
+      oxygen_saturation: '',
+      pain_scale: '',
     },
   });
 
@@ -40,7 +40,7 @@ const CreateEncounterPage = () => {
 
   // Navigation handlers
   const handleBackToDashboard = () => {
-    navigate(currentUser?.role === "DOCTOR" ? "/dokter-view" : "/nurse-view");
+    navigate(currentUser?.role === 'DOCTOR' ? '/dokter-view' : '/nurse-view');
   };
 
   // Form validation
@@ -48,19 +48,19 @@ const CreateEncounterPage = () => {
     const newErrors = {};
 
     if (!formData.patient_id.trim()) {
-      newErrors.patient_id = "Patient ID wajib diisi";
+      newErrors.patient_id = 'Patient ID wajib diisi';
     } else if (!/^\d+$/.test(formData.patient_id.trim())) {
-      newErrors.patient_id = "Patient ID harus berupa angka";
+      newErrors.patient_id = 'Patient ID harus berupa angka';
     }
 
     if (!formData.chief_complaint.trim()) {
-      newErrors.chief_complaint = "Keluhan utama wajib diisi";
+      newErrors.chief_complaint = 'Keluhan utama wajib diisi';
     } else if (formData.chief_complaint.trim().length < 10) {
-      newErrors.chief_complaint = "Keluhan utama minimal 10 karakter";
+      newErrors.chief_complaint = 'Keluhan utama minimal 10 karakter';
     }
 
     if (!formData.triage_level) {
-      newErrors.triage_level = "Level triage wajib dipilih";
+      newErrors.triage_level = 'Level triage wajib dipilih';
     }
 
     const vitals = formData.initial_vitals;
@@ -74,50 +74,50 @@ const CreateEncounterPage = () => {
       vitals.temperature,
       30,
       45,
-      "temperature",
-      "Suhu harus antara 30-45°C"
+      'temperature',
+      'Suhu harus antara 30-45°C'
     );
     validateRange(
       vitals.heart_rate,
       30,
       250,
-      "heart_rate",
-      "Denyut jantung harus antara 30-250 BPM"
+      'heart_rate',
+      'Denyut jantung harus antara 30-250 BPM'
     );
     validateRange(
       vitals.blood_pressure_systolic,
       60,
       250,
-      "blood_pressure_systolic",
-      "Tekanan sistolik harus antara 60-250 mmHg"
+      'blood_pressure_systolic',
+      'Tekanan sistolik harus antara 60-250 mmHg'
     );
     validateRange(
       vitals.blood_pressure_diastolic,
       30,
       150,
-      "blood_pressure_diastolic",
-      "Tekanan diastolik harus antara 30-150 mmHg"
+      'blood_pressure_diastolic',
+      'Tekanan diastolik harus antara 30-150 mmHg'
     );
     validateRange(
       vitals.respiratory_rate,
       8,
       60,
-      "respiratory_rate",
-      "Respirasi harus antara 8-60 per menit"
+      'respiratory_rate',
+      'Respirasi harus antara 8-60 per menit'
     );
     validateRange(
       vitals.oxygen_saturation,
       50,
       100,
-      "oxygen_saturation",
-      "Saturasi O2 harus antara 50-100%"
+      'oxygen_saturation',
+      'Saturasi O2 harus antara 50-100%'
     );
     validateRange(
       vitals.pain_scale,
       0,
       10,
-      "pain_scale",
-      "Skala nyeri harus antara 0-10"
+      'pain_scale',
+      'Skala nyeri harus antara 0-10'
     );
 
     setErrors(newErrors);
@@ -125,12 +125,12 @@ const CreateEncounterPage = () => {
   };
 
   // Form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!validateForm()) {
       setNotification({
-        type: "error",
-        message: "Mohon perbaiki kesalahan pada form",
+        type: 'error',
+        message: 'Mohon perbaiki kesalahan pada form',
       });
       return;
     }
@@ -138,7 +138,7 @@ const CreateEncounterPage = () => {
     try {
       const vitalData = {};
       Object.entries(formData.initial_vitals).forEach(([key, value]) => {
-        if (value !== "") vitalData[key] = parseFloat(value);
+        if (value !== '') vitalData[key] = parseFloat(value);
       });
 
       const payload = {
@@ -150,8 +150,8 @@ const CreateEncounterPage = () => {
 
       const newEncounter = await startEncounter(payload);
       setNotification({
-        type: "success",
-        message: "Encounter berhasil dibuat!",
+        type: 'success',
+        message: 'Encounter berhasil dibuat!',
       });
 
       setTimeout(
@@ -159,26 +159,26 @@ const CreateEncounterPage = () => {
         2000
       );
     } catch (error) {
-      console.error("Failed to create encounter:", error);
+      console.error('Failed to create encounter:', error);
       setNotification({
-        type: "error",
-        message: error.message || "Gagal membuat encounter",
+        type: 'error',
+        message: error.message || 'Gagal membuat encounter',
       });
     }
   };
 
   // Form change handlers
   const handleChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
   };
 
   const handleVitalChange = (field, value) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       initial_vitals: { ...prev.initial_vitals, [field]: value },
     }));
-    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
   };
 
   // Auto-dismiss notification
@@ -190,8 +190,8 @@ const CreateEncounterPage = () => {
   }, [notification]);
 
   // Role check
-  if (!currentUser || !["DOCTOR", "NURSE"].includes(currentUser.role)) {
-    navigate("/access-denied", { replace: true });
+  if (!currentUser || !['DOCTOR', 'NURSE'].includes(currentUser.role)) {
+    navigate('/access-denied', { replace: true });
     return null;
   }
 
@@ -254,9 +254,9 @@ const CreateEncounterPage = () => {
                 <input
                   type="text"
                   value={formData.patient_id}
-                  onChange={(e) => handleChange("patient_id", e.target.value)}
+                  onChange={e => handleChange('patient_id', e.target.value)}
                   className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.patient_id ? "border-red-500" : "border-gray-300"
+                    errors.patient_id ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="Masukkan ID pasien"
                 />
@@ -274,14 +274,14 @@ const CreateEncounterPage = () => {
                 </label>
                 <textarea
                   value={formData.chief_complaint}
-                  onChange={(e) =>
-                    handleChange("chief_complaint", e.target.value)
+                  onChange={e =>
+                    handleChange('chief_complaint', e.target.value)
                   }
                   rows={3}
                   className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                     errors.chief_complaint
-                      ? "border-red-500"
-                      : "border-gray-300"
+                      ? 'border-red-500'
+                      : 'border-gray-300'
                   }`}
                   placeholder="Deskripsikan keluhan utama pasien"
                 />
@@ -302,13 +302,13 @@ const CreateEncounterPage = () => {
                 </label>
                 <select
                   value={formData.triage_level}
-                  onChange={(e) => handleChange("triage_level", e.target.value)}
+                  onChange={e => handleChange('triage_level', e.target.value)}
                   className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.triage_level ? "border-red-500" : "border-gray-300"
+                    errors.triage_level ? 'border-red-500' : 'border-gray-300'
                   }`}
                 >
                   <option value="">Pilih level triage</option>
-                  {TRIAGE_LEVELS.map((level) => (
+                  {TRIAGE_LEVELS.map(level => (
                     <option
                       key={level.value}
                       value={level.value}
@@ -333,56 +333,56 @@ const CreateEncounterPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {[
                     {
-                      label: "Suhu (°C)",
-                      field: "temperature",
+                      label: 'Suhu (°C)',
+                      field: 'temperature',
                       min: 30,
                       max: 45,
-                      step: "0.1",
-                      placeholder: "36.5",
+                      step: '0.1',
+                      placeholder: '36.5',
                     },
                     {
-                      label: "Denyut Jantung (BPM)",
-                      field: "heart_rate",
+                      label: 'Denyut Jantung (BPM)',
+                      field: 'heart_rate',
                       min: 30,
                       max: 250,
-                      placeholder: "80",
+                      placeholder: '80',
                     },
                     {
-                      label: "Sistolik (mmHg)",
-                      field: "blood_pressure_systolic",
+                      label: 'Sistolik (mmHg)',
+                      field: 'blood_pressure_systolic',
                       min: 60,
                       max: 250,
-                      placeholder: "120",
+                      placeholder: '120',
                     },
                     {
-                      label: "Diastolik (mmHg)",
-                      field: "blood_pressure_diastolic",
+                      label: 'Diastolik (mmHg)',
+                      field: 'blood_pressure_diastolic',
                       min: 30,
                       max: 150,
-                      placeholder: "80",
+                      placeholder: '80',
                     },
                     {
-                      label: "Respirasi (per menit)",
-                      field: "respiratory_rate",
+                      label: 'Respirasi (per menit)',
+                      field: 'respiratory_rate',
                       min: 8,
                       max: 60,
-                      placeholder: "20",
+                      placeholder: '20',
                     },
                     {
-                      label: "Saturasi O2 (%)",
-                      field: "oxygen_saturation",
+                      label: 'Saturasi O2 (%)',
+                      field: 'oxygen_saturation',
                       min: 50,
                       max: 100,
-                      placeholder: "98",
+                      placeholder: '98',
                     },
                     {
-                      label: "Skala Nyeri (0-10)",
-                      field: "pain_scale",
+                      label: 'Skala Nyeri (0-10)',
+                      field: 'pain_scale',
                       min: 0,
                       max: 10,
-                      placeholder: "0",
+                      placeholder: '0',
                     },
-                  ].map((vital) => (
+                  ].map(vital => (
                     <div key={vital.field}>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         {vital.label}
@@ -393,13 +393,13 @@ const CreateEncounterPage = () => {
                         max={vital.max}
                         step={vital.step}
                         value={formData.initial_vitals[vital.field]}
-                        onChange={(e) =>
+                        onChange={e =>
                           handleVitalChange(vital.field, e.target.value)
                         }
                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                           errors[vital.field]
-                            ? "border-red-500"
-                            : "border-gray-300"
+                            ? 'border-red-500'
+                            : 'border-gray-300'
                         }`}
                         placeholder={vital.placeholder}
                       />
@@ -445,7 +445,7 @@ const CreateEncounterPage = () => {
                       Membuat...
                     </span>
                   ) : (
-                    "Buat Encounter"
+                    'Buat Encounter'
                   )}
                 </button>
                 <button

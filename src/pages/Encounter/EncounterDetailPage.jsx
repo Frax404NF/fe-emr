@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
-import { useEncounter } from "../../hooks/useEncounter";
-import NakesDashboardLayout from "../../layouts/NakesDashboardLayout";
-import DashboardCard from "../../components/ui/DashboardCard";
-import NotificationArea from "../../components/ui/NotificationArea";
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import { useEncounter } from '../../hooks/useEncounter';
+import NakesDashboardLayout from '../../layouts/NakesDashboardLayout';
+import DashboardCard from '../../components/ui/DashboardCard';
+import NotificationArea from '../../components/ui/NotificationArea';
 
 // Komponen untuk Tanda Vital
 const VitalSignsCard = ({ vitalSigns, formatDate }) => {
@@ -25,27 +25,27 @@ const VitalSignsCard = ({ vitalSigns, formatDate }) => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   {vital.temperature && (
                     <div>
-                      <span className="font-medium">Suhu:</span>{" "}
+                      <span className="font-medium">Suhu:</span>{' '}
                       {vital.temperature}°C
                     </div>
                   )}
                   {vital.heart_rate && (
                     <div>
-                      <span className="font-medium">HR:</span>{" "}
+                      <span className="font-medium">HR:</span>{' '}
                       {vital.heart_rate} BPM
                     </div>
                   )}
                   {vital.blood_pressure_systolic &&
                     vital.blood_pressure_diastolic && (
                       <div>
-                        <span className="font-medium">TD:</span>{" "}
+                        <span className="font-medium">TD:</span>{' '}
                         {vital.blood_pressure_systolic}/
                         {vital.blood_pressure_diastolic} mmHg
                       </div>
                     )}
                   {vital.oxygen_saturation && (
                     <div>
-                      <span className="font-medium">SpO2:</span>{" "}
+                      <span className="font-medium">SpO2:</span>{' '}
                       {vital.oxygen_saturation}%
                     </div>
                   )}
@@ -143,23 +143,23 @@ const SoapNotesCard = ({ soapNotes, formatDate }) => {
                     <h4 className="font-medium text-gray-800 mb-1">
                       Subjective
                     </h4>
-                    <p className="text-gray-600">{note.subjective || "-"}</p>
+                    <p className="text-gray-600">{note.subjective || '-'}</p>
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-800 mb-1">
                       Objective
                     </h4>
-                    <p className="text-gray-600">{note.objective || "-"}</p>
+                    <p className="text-gray-600">{note.objective || '-'}</p>
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-800 mb-1">
                       Assessment
                     </h4>
-                    <p className="text-gray-600">{note.assessment || "-"}</p>
+                    <p className="text-gray-600">{note.assessment || '-'}</p>
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-800 mb-1">Plan</h4>
-                    <p className="text-gray-600">{note.plan || "-"}</p>
+                    <p className="text-gray-600">{note.plan || '-'}</p>
                   </div>
                 </div>
               </div>
@@ -174,42 +174,44 @@ const SoapNotesCard = ({ soapNotes, formatDate }) => {
 };
 
 // Komponen untuk Status Kunjungan & Disposition
-const DispositionCard = ({ 
-  encounter, 
-  currentUser, 
-  onStatusUpdate, 
-  getStatusBadgeColor, 
-  getNextStatusOptions, 
-  canUserUpdateStatus, 
+const DispositionCard = ({
+  encounter,
+  currentUser,
+  onStatusUpdate,
+  getStatusBadgeColor,
+  getNextStatusOptions,
+  canUserUpdateStatus,
   getStatusDisplayName,
-  statusUpdateLoading 
+  statusUpdateLoading,
 }) => {
-  const [selectedStatus, setSelectedStatus] = useState("");
-  
+  const [selectedStatus, setSelectedStatus] = useState('');
+
   const canUpdate = canUserUpdateStatus(encounter);
   const nextStatusOptions = getNextStatusOptions(encounter.status);
-  const isStatusFinal = ["DISCHARGED", "ADMITTED"].includes(encounter.status);
+  const isStatusFinal = ['DISCHARGED', 'ADMITTED'].includes(encounter.status);
 
-  const handleStatusChange = (e) => {
+  const handleStatusChange = e => {
     const newStatus = e.target.value;
     setSelectedStatus(newStatus);
-    
+
     if (newStatus) {
       const confirmMessage = `Apakah Anda yakin ingin mengubah status dari "${getStatusDisplayName(encounter.status)}" ke "${getStatusDisplayName(newStatus)}"?`;
-      
+
       if (window.confirm(confirmMessage)) {
         onStatusUpdate(newStatus);
       }
       // Reset selection after action (whether confirmed or cancelled)
-      setSelectedStatus("");
+      setSelectedStatus('');
     }
   };
 
   return (
     <DashboardCard>
       <div className="p-6">
-        <h2 className="text-xl font-bold mb-4">Status Kunjungan & Disposition</h2>
-        
+        <h2 className="text-xl font-bold mb-4">
+          Status Kunjungan & Disposition
+        </h2>
+
         {/* Status Saat Ini */}
         <div className="mb-6">
           <label className="text-sm font-medium text-gray-600 mb-2 block">
@@ -240,14 +242,20 @@ const DispositionCard = ({
             <div className="flex items-center space-x-3">
               <div className="w-3 h-3 bg-green-500 rounded-full"></div>
               <span className="text-sm text-gray-700">
-                Dimulai: {new Date(encounter.encounter_start_time).toLocaleString("id-ID")}
+                Dimulai:{' '}
+                {new Date(encounter.encounter_start_time).toLocaleString(
+                  'id-ID'
+                )}
               </span>
             </div>
             {encounter.encounter_end_time && (
               <div className="flex items-center space-x-3">
                 <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                 <span className="text-sm text-gray-700">
-                  Selesai: {new Date(encounter.encounter_end_time).toLocaleString("id-ID")}
+                  Selesai:{' '}
+                  {new Date(encounter.encounter_end_time).toLocaleString(
+                    'id-ID'
+                  )}
                 </span>
               </div>
             )}
@@ -260,7 +268,7 @@ const DispositionCard = ({
             <label className="text-sm font-medium text-gray-600 mb-3 block">
               Ubah Status Kunjungan
             </label>
-            
+
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <select
@@ -270,13 +278,13 @@ const DispositionCard = ({
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
                 >
                   <option value="">Pilih status baru...</option>
-                  {nextStatusOptions.map((status) => (
+                  {nextStatusOptions.map(status => (
                     <option key={status} value={status}>
                       {getStatusDisplayName(status)}
                     </option>
                   ))}
                 </select>
-                
+
                 {statusUpdateLoading && (
                   <div className="flex items-center space-x-2 text-blue-600">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
@@ -284,19 +292,24 @@ const DispositionCard = ({
                   </div>
                 )}
               </div>
-              
+
               <div className="text-xs text-gray-500">
                 <p className="font-medium mb-2">Opsi status yang tersedia:</p>
                 <div className="space-y-1">
-                  {nextStatusOptions.map((status) => (
+                  {nextStatusOptions.map(status => (
                     <div key={status} className="flex items-start space-x-2">
-                      <span className="font-medium">{getStatusDisplayName(status)}:</span>
+                      <span className="font-medium">
+                        {getStatusDisplayName(status)}:
+                      </span>
                       <span className="text-gray-600">
-                        {status === "ONGOING" && "Pasien sedang dalam perawatan aktif"}
-                        {status === "OBSERVATION" && "Pasien memerlukan observasi lebih lanjut"}
-                        {status === "DISPOSITION" && "Pasien siap untuk disposisi akhir"}
-                        {status === "DISCHARGED" && "Pasien dapat pulang"}
-                        {status === "ADMITTED" && "Pasien perlu rawat inap"}
+                        {status === 'ONGOING' &&
+                          'Pasien sedang dalam perawatan aktif'}
+                        {status === 'OBSERVATION' &&
+                          'Pasien memerlukan observasi lebih lanjut'}
+                        {status === 'DISPOSITION' &&
+                          'Pasien siap untuk disposisi akhir'}
+                        {status === 'DISCHARGED' && 'Pasien dapat pulang'}
+                        {status === 'ADMITTED' && 'Pasien perlu rawat inap'}
                       </span>
                     </div>
                   ))}
@@ -311,9 +324,9 @@ const DispositionCard = ({
           <div className="border-t pt-4">
             <div className="bg-gray-50 border-l-4 border-gray-400 p-3 rounded">
               <p className="text-sm text-gray-600">
-                {currentUser?.role === "NURSE" && isStatusFinal
-                  ? "Hanya dokter yang dapat mengubah status final encounter."
-                  : "Anda tidak memiliki izin untuk mengubah status encounter ini."}
+                {currentUser?.role === 'NURSE' && isStatusFinal
+                  ? 'Hanya dokter yang dapat mengubah status final encounter.'
+                  : 'Anda tidak memiliki izin untuk mengubah status encounter ini.'}
               </p>
             </div>
           </div>
@@ -339,7 +352,8 @@ const DispositionCard = ({
                 </div>
                 <div className="ml-3">
                   <p className="text-sm text-green-700">
-                    Encounter telah selesai dengan status {getStatusDisplayName(encounter.status)}.
+                    Encounter telah selesai dengan status{' '}
+                    {getStatusDisplayName(encounter.status)}.
                   </p>
                 </div>
               </div>
@@ -376,10 +390,9 @@ const DispositionCard = ({
                   {encounter.medic_staff.staff_name}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {encounter.medic_staff.role} 
-                  {encounter.medic_staff.specialization && 
-                    ` - ${encounter.medic_staff.specialization}`
-                  }
+                  {encounter.medic_staff.role}
+                  {encounter.medic_staff.specialization &&
+                    ` - ${encounter.medic_staff.specialization}`}
                 </p>
               </div>
             </div>
@@ -410,7 +423,7 @@ const EncounterDetailPage = () => {
   const [statusUpdateLoading, setStatusUpdateLoading] = useState(false);
 
   useEffect(() => {
-    if (!currentUser) return navigate("/login");
+    if (!currentUser) return navigate('/login');
 
     const loadEncounterDetails = async () => {
       try {
@@ -420,11 +433,11 @@ const EncounterDetailPage = () => {
         // Fetch encounter details menggunakan hook
         await fetchEncounterDetails(encounterId);
       } catch (error) {
-        console.error("Failed to fetch encounter:", error);
+        console.error('Failed to fetch encounter:', error);
         setNotifications([
           {
-            type: "error",
-            message: error.message || "Gagal memuat detail encounter",
+            type: 'error',
+            message: error.message || 'Gagal memuat detail encounter',
             id: Date.now(),
           },
         ]);
@@ -449,10 +462,10 @@ const EncounterDetailPage = () => {
   // Handle error dari hook
   useEffect(() => {
     if (error) {
-      setNotifications((prev) => [
+      setNotifications(prev => [
         ...prev,
         {
-          type: "error",
+          type: 'error',
           message: error,
           id: Date.now(),
         },
@@ -464,55 +477,55 @@ const EncounterDetailPage = () => {
   useEffect(() => {
     if (notifications.length > 0) {
       const timer = setTimeout(() => {
-        setNotifications((prev) => prev.slice(1));
+        setNotifications(prev => prev.slice(1));
       }, 5000);
       return () => clearTimeout(timer);
     }
   }, [notifications]);
 
-  const handleBackToDashboard = () => navigate("/encounter-dashboard");
+  const handleBackToDashboard = () => navigate('/encounter-dashboard');
 
-  const getStatusColor = (status) => {
+  const getStatusColor = status => {
     const statusColors = {
-      TRIAGE: "bg-orange-100 text-orange-800",
-      ONGOING: "bg-blue-100 text-blue-800",
-      OBSERVATION: "bg-purple-100 text-purple-800",
-      DISPOSITION: "bg-indigo-100 text-indigo-800",
-      DISCHARGED: "bg-green-100 text-green-800",
-      ADMITTED: "bg-red-100 text-red-800",
+      TRIAGE: 'bg-orange-100 text-orange-800',
+      ONGOING: 'bg-blue-100 text-blue-800',
+      OBSERVATION: 'bg-purple-100 text-purple-800',
+      DISPOSITION: 'bg-indigo-100 text-indigo-800',
+      DISCHARGED: 'bg-green-100 text-green-800',
+      ADMITTED: 'bg-red-100 text-red-800',
     };
-    return statusColors[status] || "bg-gray-100 text-gray-800";
+    return statusColors[status] || 'bg-gray-100 text-gray-800';
   };
 
-  const getTriageColor = (triage) => {
+  const getTriageColor = triage => {
     const triageColors = {
-      RED: "bg-red-100 text-red-800",
-      YELLOW: "bg-yellow-100 text-yellow-800",
-      GREEN: "bg-green-100 text-green-800",
-      BLACK: "bg-gray-100 text-gray-800",
+      RED: 'bg-red-100 text-red-800',
+      YELLOW: 'bg-yellow-100 text-yellow-800',
+      GREEN: 'bg-green-100 text-green-800',
+      BLACK: 'bg-gray-100 text-gray-800',
     };
-    return triageColors[triage] || "bg-gray-100 text-gray-800";
+    return triageColors[triage] || 'bg-gray-100 text-gray-800';
   };
 
   // Format date dengan lebih user-friendly
-  const formatDate = (dateString) => {
-    if (!dateString) return "-";
+  const formatDate = dateString => {
+    if (!dateString) return '-';
 
     try {
       const date = new Date(dateString);
       // Format: DD/MM/YYYY
-      return date.toLocaleDateString("id-ID", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
+      return date.toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
       });
     } catch (error) {
-      return "-";
+      return '-';
     }
   };
 
   // Function untuk menampilkan age berdasarkan date_of_birth
-  const calculateAge = (dateOfBirth) => {
+  const calculateAge = dateOfBirth => {
     if (!dateOfBirth) return null;
 
     try {
@@ -535,77 +548,77 @@ const EncounterDetailPage = () => {
   };
 
   // Status management functions
-  const getStatusBadgeColor = (status) => {
+  const getStatusBadgeColor = status => {
     switch (status) {
-      case "TRIAGE":
-        return "bg-yellow-100 text-yellow-800";
-      case "ONGOING":
-        return "bg-blue-100 text-blue-800";
-      case "OBSERVATION":
-        return "bg-purple-100 text-purple-800";
-      case "DISPOSITION":
-        return "bg-green-100 text-green-800";
-      case "DISCHARGED":
-        return "bg-gray-100 text-gray-800";
-      case "ADMITTED":
-        return "bg-indigo-100 text-indigo-800";
+      case 'TRIAGE':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'ONGOING':
+        return 'bg-blue-100 text-blue-800';
+      case 'OBSERVATION':
+        return 'bg-purple-100 text-purple-800';
+      case 'DISPOSITION':
+        return 'bg-green-100 text-green-800';
+      case 'DISCHARGED':
+        return 'bg-gray-100 text-gray-800';
+      case 'ADMITTED':
+        return 'bg-indigo-100 text-indigo-800';
       default:
-        return "bg-gray-100 text-gray-800";
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getNextStatusOptions = (currentStatus) => {
+  const getNextStatusOptions = currentStatus => {
     const transitions = {
-      TRIAGE: ["ONGOING"],
-      ONGOING: ["OBSERVATION", "DISPOSITION"],
-      OBSERVATION: ["ONGOING", "DISPOSITION"],
-      DISPOSITION: ["DISCHARGED", "ADMITTED"],
+      TRIAGE: ['ONGOING'],
+      ONGOING: ['OBSERVATION', 'DISPOSITION'],
+      OBSERVATION: ['ONGOING', 'DISPOSITION'],
+      DISPOSITION: ['DISCHARGED', 'ADMITTED'],
     };
     return transitions[currentStatus] || [];
   };
 
-  const canUserUpdateStatus = (encounter) => {
+  const canUserUpdateStatus = encounter => {
     if (!currentUser) return false;
-    if (currentUser.role === "DOCTOR") return true;
-    if (currentUser.role === "NURSE") {
-      return !["DISCHARGED", "ADMITTED"].includes(encounter.status);
+    if (currentUser.role === 'DOCTOR') return true;
+    if (currentUser.role === 'NURSE') {
+      return !['DISCHARGED', 'ADMITTED'].includes(encounter.status);
     }
     return false;
   };
 
-  const getStatusDisplayName = (status) => {
+  const getStatusDisplayName = status => {
     const statusNames = {
-      TRIAGE: "Triage",
-      ONGOING: "Sedang Ditangani",
-      OBSERVATION: "Observasi",
-      DISPOSITION: "Disposition",
-      DISCHARGED: "Pulang",
-      ADMITTED: "Rawat Inap",
+      TRIAGE: 'Triage',
+      ONGOING: 'Sedang Ditangani',
+      OBSERVATION: 'Observasi',
+      DISPOSITION: 'Disposition',
+      DISCHARGED: 'Pulang',
+      ADMITTED: 'Rawat Inap',
     };
     return statusNames[status] || status;
   };
 
-  const handleStatusUpdate = async (newStatus) => {
+  const handleStatusUpdate = async newStatus => {
     if (!currentEncounter || statusUpdateLoading) return;
 
     setStatusUpdateLoading(true);
     try {
       await updateEncounterStatus(currentEncounter.encounter_id, newStatus);
-      setNotifications((prev) => [
+      setNotifications(prev => [
         ...prev,
         {
-          type: "success",
+          type: 'success',
           message: `Status berhasil diubah menjadi ${getStatusDisplayName(newStatus)}`,
           id: Date.now(),
         },
       ]);
     } catch (error) {
-      console.error("Failed to update status:", error);
-      setNotifications((prev) => [
+      console.error('Failed to update status:', error);
+      setNotifications(prev => [
         ...prev,
         {
-          type: "error",
-          message: error.message || "Gagal mengubah status encounter",
+          type: 'error',
+          message: error.message || 'Gagal mengubah status encounter',
           id: Date.now(),
         },
       ]);
@@ -631,7 +644,7 @@ const EncounterDetailPage = () => {
         <div className="text-center py-8">
           <p className="text-gray-600">Encounter tidak ditemukan</p>
           <button
-            onClick={() => navigate("/encounter-dashboard")}
+            onClick={() => navigate('/encounter-dashboard')}
             className="mt-4 text-blue-600 hover:text-blue-800"
           >
             ← Kembali ke Dashboard
@@ -651,7 +664,7 @@ const EncounterDetailPage = () => {
     vital_signs,
     diagnoses,
     soap_notes,
-    medic_staff,
+    // medic_staff,
   } = currentEncounter;
 
   return (
@@ -706,7 +719,7 @@ const EncounterDetailPage = () => {
                     Nama Pasien
                   </label>
                   <p className="text-xl font-bold text-gray-900">
-                    {patient?.patient_name || "-"}
+                    {patient?.patient_name || '-'}
                   </p>
                 </div>
                 <div>
@@ -724,7 +737,7 @@ const EncounterDetailPage = () => {
                         )}
                       </>
                     ) : (
-                      "-"
+                      '-'
                     )}
                   </p>
                 </div>
@@ -733,11 +746,11 @@ const EncounterDetailPage = () => {
                     Jenis Kelamin
                   </label>
                   <p className="text-gray-800">
-                    {patient?.gender === "LAKI_LAKI"
-                      ? "Laki-laki"
-                      : patient?.gender === "PEREMPUAN"
-                      ? "Perempuan"
-                      : "-"}
+                    {patient?.gender === 'LAKI_LAKI'
+                      ? 'Laki-laki'
+                      : patient?.gender === 'PEREMPUAN'
+                        ? 'Perempuan'
+                        : '-'}
                   </p>
                 </div>
                 <div>
@@ -745,7 +758,7 @@ const EncounterDetailPage = () => {
                     Golongan Darah
                   </label>
                   <p className="text-gray-800 font-medium">
-                    {patient?.blood_type || "-"}
+                    {patient?.blood_type || '-'}
                   </p>
                 </div>
               </div>
@@ -868,7 +881,7 @@ const EncounterDetailPage = () => {
                   <div className="bg-gray-50 border-l-4 border-gray-400 p-3 rounded">
                     <p className="text-gray-800">
                       {chief_complaint ||
-                        "Tidak ada keluhan utama yang dicatat"}
+                        'Tidak ada keluhan utama yang dicatat'}
                     </p>
                   </div>
                 </div>
@@ -883,7 +896,7 @@ const EncounterDetailPage = () => {
         <TreatmentsCard />
         <DiagnosticTestsCard />
         <SoapNotesCard soapNotes={soap_notes} formatDate={formatDate} />
-        <DispositionCard 
+        <DispositionCard
           encounter={currentEncounter}
           currentUser={currentUser}
           onStatusUpdate={handleStatusUpdate}
