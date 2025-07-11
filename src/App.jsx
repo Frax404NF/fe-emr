@@ -1,6 +1,6 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Page Components
 import {
@@ -8,18 +8,21 @@ import {
   DoctorDashboard,
   NurseDashboard,
   PatientDashboard,
-} from "./pages/Dashboard";
-import { LoginPage, RegisterPage } from "./pages/Auth";
-import NotFound from "./pages/NotFound";
-import MainPage from "./pages/MainPage";
+} from './pages/Dashboard';
+import { LoginPage, RegisterPage } from './pages/Auth';
+import NotFound from './pages/NotFound';
+import MainPage from './pages/MainPage';
 
 // Encounter Pages
-import EncounterDashboard from "./pages/Encounter/EncounterDashboard";
-import CreateEncounterPage from "./pages/Encounter/CreateEncounterPage";
-import EncounterDetailPage from "./pages/Encounter/EncounterDetailPage";
+import EncounterDashboard from './pages/Encounter/EncounterDashboard';
+import CreateEncounterPage from './pages/Encounter/CreateEncounterPage';
+import EncounterDetailPage from './pages/Encounter/EncounterDetailPage';
+
+// Patient Management Pages
+import PatientManagementPage from './pages/PatientManagementPage';
 
 // Styles
-import "./index.css";
+import './index.css';
 
 /**
  * AppRoutes Component
@@ -39,8 +42,8 @@ const AppRoutes = () => {
         path="/"
         element={
           <ProtectedRoute>
-            {" "}
-            <MainPage />{" "}
+            {' '}
+            <MainPage />{' '}
           </ProtectedRoute>
         }
       />
@@ -49,7 +52,7 @@ const AppRoutes = () => {
       <Route
         path="/dokter-view"
         element={
-          <ProtectedRoute roles={["DOCTOR"]}>
+          <ProtectedRoute roles={['DOCTOR']}>
             <DoctorDashboard />
           </ProtectedRoute>
         }
@@ -58,7 +61,7 @@ const AppRoutes = () => {
       <Route
         path="/nurse-view"
         element={
-          <ProtectedRoute roles={["NURSE"]}>
+          <ProtectedRoute roles={['NURSE']}>
             <NurseDashboard />
           </ProtectedRoute>
         }
@@ -67,7 +70,7 @@ const AppRoutes = () => {
       <Route
         path="/patient-view"
         element={
-          <ProtectedRoute roles={["PATIENT"]}>
+          <ProtectedRoute roles={['PATIENT']}>
             <PatientDashboard />
           </ProtectedRoute>
         }
@@ -76,7 +79,7 @@ const AppRoutes = () => {
       <Route
         path="/admin-view"
         element={
-          <ProtectedRoute roles={["ADMIN"]}>
+          <ProtectedRoute roles={['ADMIN']}>
             <AdminDashboard />
           </ProtectedRoute>
         }
@@ -86,7 +89,7 @@ const AppRoutes = () => {
       <Route
         path="/encounter-dashboard"
         element={
-          <ProtectedRoute roles={["DOCTOR", "NURSE"]}>
+          <ProtectedRoute roles={['DOCTOR', 'NURSE']}>
             <EncounterDashboard />
           </ProtectedRoute>
         }
@@ -95,7 +98,7 @@ const AppRoutes = () => {
       <Route
         path="/create-encounter"
         element={
-          <ProtectedRoute roles={["DOCTOR", "NURSE"]}>
+          <ProtectedRoute roles={['DOCTOR', 'NURSE']}>
             <CreateEncounterPage />
           </ProtectedRoute>
         }
@@ -104,8 +107,18 @@ const AppRoutes = () => {
       <Route
         path="/encounter/:encounterId"
         element={
-          <ProtectedRoute roles={["DOCTOR", "NURSE"]}>
+          <ProtectedRoute roles={['DOCTOR', 'NURSE']}>
             <EncounterDetailPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Patient Management Route - Accessible  */}
+      <Route
+        path="/patient-management"
+        element={
+          <ProtectedRoute roles={['DOCTOR', 'NURSE']}>
+            <PatientManagementPage />
           </ProtectedRoute>
         }
       />
