@@ -115,9 +115,79 @@ const listActiveEncounters = async (statusFilter = []) => {
   }
 };
 
+const checkActiveEncounter = async patientId => {
+  try {
+    console.log('Checking active encounter for patient ID:', patientId);
+    
+    // First, get patient info to match by name if needed
+    let patientInfo = null;
+    try {
+      const patientResponse = await apiClient.get(`${envConfig.API_BASE_URL}/patients/${patientId}`);
+      if (patientResponse.data.success) {
+        patientInfo = patientResponse.data.data;
+      }
+    } catch (error) {
+      console.log('Could not fetch patient info:', error);
+    }
+    
+    // Use the existing active encounters endpoint
+    const response = await apiClient.get(API_URL);
+
+    if (response.data.success) {
+      const encounters = response.data.data;
+      
+      // Find active encounter for this patient
+      const activeEncounter = encounters.find(enc => {
+        // Handle multiple possible patient ID structures
+        let encPatientId;
+        
+        // Check all possible patient ID locations
+        if (enc.patient_id) {
+          encPatientId = enc.patient_id;
+        } else if (enc.patient?.patient_id) {
+          encPatientId = enc.patient.patient_id;
+        } else if (enc.patient?.id) {
+          encPatientId = enc.patient.id;
+        } else if (enc.patientId) {
+          encPatientId = enc.patientId;
+        } else if (enc.patient_ID) {
+          encPatientId = enc.patient_ID;
+        } else if (enc.Patient_ID) {
+          encPatientId = enc.Patient_ID;
+        }
+        
+        // Try to match by patient ID first
+        let isMatchingPatient = encPatientId === parseInt(patientId) || encPatientId === patientId;
+        
+        // If no patient ID match and we have patient info, try matching by name
+        if (!isMatchingPatient && patientInfo && enc.patient?.patient_name) {
+          isMatchingPatient = enc.patient.patient_name === patientInfo.patient_name;
+        }
+        
+        const isActiveStatus = ['TRIAGE', 'ONGOING', 'OBSERVATION', 'DISPOSITION'].includes(enc.status?.toUpperCase());
+        
+        return isMatchingPatient && isActiveStatus;
+      });
+      
+      if (activeEncounter) {
+        console.log('Active encounter found:', activeEncounter.encounter_id, 'Status:', activeEncounter.status);
+      }
+      
+      return activeEncounter || null;
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Check active encounter error:', error);
+    // Return null instead of throwing error to allow graceful degradation
+    return null;
+  }
+};
+
 export default {
   startEncounter,
   updateEncounterStatus,
   getEncounterDetails,
   listActiveEncounters,
+  checkActiveEncounter,
 };

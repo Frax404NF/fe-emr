@@ -163,6 +163,43 @@ class PatientService {
   }
 
   /**
+   * Quick patient lookup untuk encounter - returns minimal data
+   * @param {string} searchTerm - Term pencarian (nama atau NIK)
+   * @returns {Promise<Object>} Response dengan hasil pencarian minimal
+   */
+  async quickPatientLookup(searchTerm) {
+    if (searchTerm.length < 2) {
+      return { data: { patients: [] } };
+    }
+
+    try {
+      const response = await this.api.get('/patients/quick-lookup', {
+        params: { 
+          search: searchTerm,
+          fields: 'patient_id,patient_name,NIK,date_of_birth,gender,blood_type,patient_history_of_allergies'
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Get patient basic info for encounter
+   * @param {number} patientId - ID pasien
+   * @returns {Promise<Object>} Response dengan basic info pasien
+   */
+  async getPatientBasicInfo(patientId) {
+    try {
+      const response = await this.api.get(`/patients/${patientId}/basic-info`);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
    * Handle API errors
    * @param {Error} error - Error object dari API
    * @returns {Error} Formatted error
