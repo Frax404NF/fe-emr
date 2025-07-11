@@ -179,7 +179,7 @@ const EncounterDashboard = () => {
           <DashboardCard>
             <div className="px-6 py-5">
               <h1 className="text-3xl font-bold text-gray-900">
-                Halaman Encounter
+                Halaman Kunjungan
               </h1>
               <p className="text-gray-600 mt-1">
                 Monitor dan kelola encounter pasien secara real-time

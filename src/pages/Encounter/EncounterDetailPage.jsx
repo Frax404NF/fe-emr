@@ -718,7 +718,7 @@ const EncounterDetailPage = () => {
                   <label className="text-sm font-medium text-gray-600">
                     Nama Pasien
                   </label>
-                  <p className="text-xl font-bold text-gray-900">
+                  <p className="text-l font-bold text-gray-900">
                     {patient?.patient_name || '-'}
                   </p>
                 </div>
