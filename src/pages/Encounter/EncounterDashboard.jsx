@@ -40,7 +40,7 @@ const EncounterDashboard = () => {
   };
 
   const handleViewDetails = encounterId => {
-    navigate(`/encounter/${encounterId}`);
+    navigate(`/encounters/${encounterId}`);
   };
 
   const getStatusBadgeColor = status => {
