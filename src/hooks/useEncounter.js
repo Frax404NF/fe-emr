@@ -1,5 +1,5 @@
-import { useState, useCallback, useRef } from "react";
-import encounterService from "../services/encounterService";
+import { useState, useCallback, useRef } from 'react';
+import encounterService from '../services/encounterService';
 
 export const useEncounter = () => {
   const [encounters, setEncounters] = useState([]);
@@ -15,7 +15,7 @@ export const useEncounter = () => {
     }
   }, []);
 
-  const startEncounter = useCallback(async (encounterData) => {
+  const startEncounter = useCallback(async encounterData => {
     if (!mountedRef.current) return;
 
     setLoading(true);
@@ -27,7 +27,7 @@ export const useEncounter = () => {
       if (mountedRef.current) {
         setCurrentEncounter(newEncounter);
         // Add new encounter to the list if it exists
-        setEncounters((prev) => [newEncounter, ...prev]);
+        setEncounters(prev => [newEncounter, ...prev]);
       }
 
       return newEncounter;
@@ -60,8 +60,8 @@ export const useEncounter = () => {
       try {
         // Optimistic update
         if (mountedRef.current) {
-          setEncounters((prev) =>
-            prev.map((encounter) =>
+          setEncounters(prev =>
+            prev.map(encounter =>
               encounter.encounter_id === encounterId
                 ? { ...encounter, status: newStatus }
                 : encounter
@@ -69,7 +69,7 @@ export const useEncounter = () => {
           );
 
           if (currentEncounter?.encounter_id === encounterId) {
-            setCurrentEncounter((prev) => ({ ...prev, status: newStatus }));
+            setCurrentEncounter(prev => ({ ...prev, status: newStatus }));
           }
         }
 
@@ -80,8 +80,8 @@ export const useEncounter = () => {
 
         if (mountedRef.current) {
           // Update with actual server response
-          setEncounters((prev) =>
-            prev.map((encounter) =>
+          setEncounters(prev =>
+            prev.map(encounter =>
               encounter.encounter_id === encounterId
                 ? updatedEncounter
                 : encounter
@@ -114,7 +114,7 @@ export const useEncounter = () => {
   /**
    * Fetch encounter details
    */
-  const fetchEncounterDetails = useCallback(async (encounterId) => {
+  const fetchEncounterDetails = useCallback(async encounterId => {
     if (!mountedRef.current) return;
 
     setLoading(true);
@@ -150,9 +150,8 @@ export const useEncounter = () => {
     setError(null);
 
     try {
-      const encounterList = await encounterService.listActiveEncounters(
-        statusFilter
-      );
+      const encounterList =
+        await encounterService.listActiveEncounters(statusFilter);
 
       if (mountedRef.current) {
         setEncounters(encounterList);

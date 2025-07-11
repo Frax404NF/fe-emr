@@ -26,7 +26,7 @@ const usePatients = (initialPage = 1, initialLimit = 20) => {
   const fetchPatients = useCallback(async (page = 1, limit = 20) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await patientService.getPatients(page, limit);
       setPatients(response.data.patients);
@@ -51,7 +51,7 @@ const usePatients = (initialPage = 1, initialLimit = 20) => {
     fetchPatients(pagination.page, pagination.limit);
   };
 
-  const goToPage = (page) => {
+  const goToPage = page => {
     fetchPatients(page, pagination.limit);
   };
 
@@ -75,7 +75,7 @@ const usePatientSearch = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState(null);
 
-  const searchPatients = useCallback(async (searchTerm) => {
+  const searchPatients = useCallback(async searchTerm => {
     if (searchTerm.length < 3) {
       setSearchResults([]);
       return;
@@ -114,6 +114,7 @@ const usePatientSearch = () => {
  * @param {Object} initialData - Data awal untuk form
  * @returns {Object} State dan functions untuk form pasien
  */
+
 const usePatientForm = (initialData = null) => {
   const [formData, setFormData] = useState(
     initialData || {
@@ -134,39 +135,53 @@ const usePatientForm = (initialData = null) => {
 
   const validateForm = () => {
     const newErrors = {};
+    const isEmergencyMode = formData.is_emergency;
+
+    // Helper function for phone validation
+    const validatePhoneNumber = phone => {
+      if (!phone) return true; // Empty is allowed
+      if (phone.length > 15) return false;
+      // Indonesian phone number format: starts with +62/62/0, then 8, then 1-9, then 6-9 more digits
+      const regex = /^(\+62|62|0)8[1-9][0-9]{6,9}$/;
+      return regex.test(phone);
+    };
 
     // Required fields validation
     if (!formData.patient_name?.trim()) {
       newErrors.patient_name = 'Nama pasien wajib diisi';
     }
 
-    if (!formData.NIK?.trim()) {
-      newErrors.NIK = 'NIK wajib diisi';
-    } else if (!/^\d{16}$/.test(formData.NIK)) {
-      newErrors.NIK = 'NIK harus 16 digit angka';
+    // NIK validation - required only for regular patients
+    if (!isEmergencyMode) {
+      if (!formData.NIK?.trim()) {
+        newErrors.NIK = 'NIK wajib diisi';
+      } else if (!/^\d{16}$/.test(formData.NIK)) {
+        newErrors.NIK = 'NIK harus 16 digit angka';
+      }
     }
 
-    if (!formData.date_of_birth) {
+    // Date of birth validation - required only for regular patients
+    if (!isEmergencyMode && !formData.date_of_birth) {
       newErrors.date_of_birth = 'Tanggal lahir wajib diisi';
     }
 
+    // Gender validation - always required
     if (!formData.gender) {
       newErrors.gender = 'Jenis kelamin wajib dipilih';
     }
 
-    // Phone number validation
-    if (formData.phone_number) {
-      const phoneRegex = /^(\+62|0)8[0-9]{8,11}$/;
-      if (!phoneRegex.test(formData.phone_number)) {
-        newErrors.phone_number = 'Format nomor telepon tidak valid (contoh: 081234567890)';
-      }
+    // Phone number validation - optional but must be valid if provided
+    if (formData.phone_number && !validatePhoneNumber(formData.phone_number)) {
+      newErrors.phone_number =
+        'Format nomor telepon tidak valid (contoh: 081234567890)';
     }
 
-    if (formData.emergency_contact_phonenumber) {
-      const phoneRegex = /^(\+62|0)8[0-9]{8,11}$/;
-      if (!phoneRegex.test(formData.emergency_contact_phonenumber)) {
-        newErrors.emergency_contact_phonenumber = 'Format nomor telepon darurat tidak valid';
-      }
+    if (
+      formData.emergency_contact_phonenumber &&
+      !validatePhoneNumber(formData.emergency_contact_phonenumber)
+    ) {
+      newErrors.emergency_contact_phonenumber =
+        'Format nomor telepon darurat tidak valid';
     }
 
     setErrors(newErrors);
@@ -188,12 +203,34 @@ const usePatientForm = (initialData = null) => {
     }
   };
 
-  const handleSubmit = async (onSubmit) => {
+  const handleSubmit = async onSubmit => {
     if (!validateForm()) return false;
 
     setIsSubmitting(true);
     try {
-      await onSubmit(formData);
+      // Prepare data for submission
+      const submissionData = { ...formData };
+
+      // Remove empty blood_type field (enum should not receive empty strings)
+      if (!submissionData.blood_type || submissionData.blood_type === '') {
+        delete submissionData.blood_type;
+      }
+
+      // For emergency patients, remove empty required fields and set appropriate flags
+      if (formData.is_emergency) {
+        // Remove NIK and date_of_birth if empty (they'll be auto-generated on backend)
+        if (!submissionData.NIK) {
+          delete submissionData.NIK;
+        }
+        if (!submissionData.date_of_birth) {
+          delete submissionData.date_of_birth;
+        }
+        // Remove blood_type and phone_number for emergency patients (not needed)
+        delete submissionData.blood_type;
+        delete submissionData.phone_number;
+      }
+
+      await onSubmit(submissionData);
       return true;
     } catch (error) {
       // Handle API errors
@@ -209,18 +246,20 @@ const usePatientForm = (initialData = null) => {
   };
 
   const resetForm = () => {
-    setFormData(initialData || {
-      patient_name: '',
-      NIK: '',
-      date_of_birth: '',
-      blood_type: '',
-      gender: '',
-      phone_number: '',
-      emergency_contact_name: '',
-      emergency_contact_phonenumber: '',
-      patient_history_of_allergies: '',
-      patient_disease_history: '',
-    });
+    setFormData(
+      initialData || {
+        patient_name: '',
+        NIK: '',
+        date_of_birth: '',
+        blood_type: '',
+        gender: '',
+        phone_number: '',
+        emergency_contact_name: '',
+        emergency_contact_phonenumber: '',
+        patient_history_of_allergies: '',
+        patient_disease_history: '',
+      }
+    );
     setErrors({});
   };
 
@@ -240,7 +279,7 @@ const usePatientForm = (initialData = null) => {
  * @param {number} patientId - ID pasien
  * @returns {Object} State dan functions untuk detail pasien
  */
-const usePatientDetail = (patientId) => {
+const usePatientDetail = patientId => {
   const [patient, setPatient] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -278,9 +317,4 @@ const usePatientDetail = (patientId) => {
 };
 
 // Ekspor semua hooks dalam satu object
-export {
-  usePatients,
-  usePatientSearch,
-  usePatientForm,
-  usePatientDetail
-};
+export { usePatients, usePatientSearch, usePatientForm, usePatientDetail };
