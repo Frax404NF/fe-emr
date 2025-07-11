@@ -186,6 +186,32 @@ export const useEncounter = () => {
     }
   }, []);
 
+  /**
+   * Check for active encounter for a patient
+   */
+  const checkActiveEncounter = useCallback(async (patientId) => {
+    if (!mountedRef.current || !patientId) return null;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const activeEncounter = await encounterService.checkActiveEncounter(patientId);
+      return activeEncounter; // Can be null if no active encounter found
+    } catch (err) {
+      if (mountedRef.current) {
+        console.warn('Error checking active encounter:', err.message);
+        // Don't set error state for this background check
+      }
+      // Return null instead of throwing to allow graceful degradation
+      return null;
+    } finally {
+      if (mountedRef.current) {
+        setLoading(false);
+      }
+    }
+  }, []);
+
   // Cleanup function to prevent memory leaks
   const cleanup = useCallback(() => {
     mountedRef.current = false;
@@ -204,6 +230,7 @@ export const useEncounter = () => {
     fetchEncounterDetails,
     fetchActiveEncounters,
     refreshEncounters,
+    checkActiveEncounter,
     clearCurrentEncounter,
     clearError,
     cleanup,

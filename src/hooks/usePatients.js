@@ -316,5 +316,50 @@ const usePatientDetail = patientId => {
   };
 };
 
+/**
+ * Hook untuk quick patient lookup pada encounter creation
+ * Optimized untuk performa yang lebih baik
+ * @returns {Object} State dan functions untuk quick lookup
+ */
+const usePatientQuickLookup = () => {
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState(null);
+
+  const quickLookup = useCallback(async searchTerm => {
+    if (searchTerm.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    setIsSearching(true);
+    setSearchError(null);
+
+    try {
+      const response = await patientService.quickPatientLookup(searchTerm);
+      setSearchResults(response.data.patients || []);
+    } catch (err) {
+      setSearchError(err.message);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  const clearSearch = () => {
+    setSearchResults([]);
+    setSearchError(null);
+    setIsSearching(false);
+  };
+
+  return {
+    searchResults,
+    isSearching,
+    searchError,
+    quickLookup,
+    clearSearch,
+  };
+};
+
 // Ekspor semua hooks dalam satu object
-export { usePatients, usePatientSearch, usePatientForm, usePatientDetail };
+export { usePatients, usePatientSearch, usePatientForm, usePatientDetail, usePatientQuickLookup };
