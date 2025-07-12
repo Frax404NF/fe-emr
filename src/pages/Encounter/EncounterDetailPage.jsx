@@ -119,7 +119,7 @@ const EncounterDetailPage = () => {
   }
 
   const { patient, status, triage_level, encounter_start_time, encounter_end_time, 
-          chief_complaint, vital_signs, diagnoses, soap_notes } = currentEncounter;
+          chief_complaint, diagnoses, soap_notes } = currentEncounter;
   const statusColor = getStatusConfig(status).color;
   const triageColor = getTriageColor(triage_level);
 
@@ -269,7 +269,10 @@ const EncounterDetailPage = () => {
           </DashboardCard>
         </div>
 
-        <VitalSignsCard vitalSigns={vital_signs} />
+        <VitalSignsCard 
+          encounterId={encounterId} 
+          token={currentUser?.access_token} 
+        />
         <DiagnosesCard diagnoses={diagnoses} />
         <TreatmentsCard />
         <DiagnosticTestsCard />
