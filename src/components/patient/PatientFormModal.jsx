@@ -528,8 +528,8 @@ const PatientFormModal = ({ isOpen, onClose, onSuccess }) => {
                 ) : (
                   <>
                     {isEmergencyMode
-                      ? '🚨 Daftarkan Pasien Darurat'
-                      : '👤 Daftarkan Pasien'}
+                      ? 'Daftarkan Pasien Darurat'
+                      : 'Daftarkan Pasien'}
                   </>
                 )}
               </button>
