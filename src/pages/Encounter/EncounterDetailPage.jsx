@@ -6,9 +6,7 @@ import { formatDate, calculateAge, getStatusConfig, getTriageColor } from '../..
 import NakesDashboardLayout from '../../layouts/NakesDashboardLayout';
 import DashboardCard from '../../components/ui/DashboardCard';
 import NotificationArea from '../../components/ui/NotificationArea';
-import {
-  VitalSignsCard,
-  DiagnosesCard,
+import { VitalSignsCard, DiagnosesCard,
   TreatmentsCard,
   DiagnosticTestsCard,
   SoapNotesCard,
@@ -34,7 +32,7 @@ const EncounterDetailPage = () => {
 
   useEffect(() => {
     if (!currentUser) return navigate('/login');
-    
+
     const loadData = async () => {
       try {
         clearError();
@@ -70,10 +68,10 @@ const EncounterDetailPage = () => {
   }, [notifications]);
 
   const handleBackToDashboard = () => navigate('/encounter-dashboard');
-  
+
   const handleStatusUpdate = async (newStatus) => {
     if (!currentEncounter || statusUpdateLoading) return;
-    
+
     setStatusUpdateLoading(true);
     try {
       await updateEncounterStatus(currentEncounter.encounter_id, newStatus);
@@ -156,7 +154,7 @@ const EncounterDetailPage = () => {
                   <label className="text-sm font-medium text-gray-600">Nama Pasien</label>
                   <p className="text-lg font-bold text-gray-900">{patient?.patient_name || '-'}</p>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-gray-600">Tanggal Lahir</label>
