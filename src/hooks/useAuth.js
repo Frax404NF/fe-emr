@@ -7,5 +7,10 @@ export function useAuth() {
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-  return context;
+  
+  // Ensure consistent property names
+  return {
+    ...context,
+    isLoading: context.loading, // Alias for backward compatibility
+  };
 }

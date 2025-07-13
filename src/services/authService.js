@@ -6,14 +6,27 @@ const API_URL = envConfig.API_BASE_URL + '/auth';
 // Create axios instance
 const apiClient = axios.create();
 
-// Basic response interceptor for error handling
+// Response interceptor for handling expired tokens
 apiClient.interceptors.response.use(
   response => response,
   error => {
-    // Log authentication errors for debugging
+    // Check if error is due to expired token
     if (error.response?.status === 401) {
       console.warn('Authentication failed or token expired');
+      
+      // Clear stored user data
+      localStorage.removeItem('user');
+      
+      // Dispatch session expired event to notify components
+      window.dispatchEvent(new CustomEvent('sessionExpired', {
+        detail: { 
+          reason: 'Token expired or authentication failed',
+          status: error.response?.status,
+          message: error.response?.data?.message || 'Session expired'
+        }
+      }));
     }
+
     return Promise.reject(error);
   }
 );
@@ -28,7 +41,7 @@ const login = async (email, password) => {
     return {
       ...response.data.data.user,
       access_token: response.data.data.access_token,
-      refresh_token: response.data.data.refresh_token,
+      // Note: Backend doesn't provide refresh_token, so we'll handle session differently
     };
   }
 
