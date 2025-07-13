@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import SessionManager from './components/SessionManager';
 
 // Page Components
 import {
@@ -32,99 +33,102 @@ import './index.css';
  */
 const AppRoutes = () => {
   return (
-    <Routes>
-      {/* Public Routes - Dapat diakses tanpa autentikasi */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+    <>
+      <SessionManager />
+      <Routes>
+        {/* Public Routes - Dapat diakses tanpa autentikasi */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
-      {/* Protected Routes - Memerlukan autentikasi */}
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            {' '}
-            <MainPage />{' '}
-          </ProtectedRoute>
-        }
-      />
+        {/* Protected Routes - Memerlukan autentikasi */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              {' '}
+              <MainPage />{' '}
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Role-based Protected Routes */}
-      <Route
-        path="/dokter-view"
-        element={
-          <ProtectedRoute roles={['DOCTOR']}>
-            <DoctorDashboard />
-          </ProtectedRoute>
-        }
-      />
+        {/* Role-based Protected Routes */}
+        <Route
+          path="/dokter-view"
+          element={
+            <ProtectedRoute roles={['DOCTOR']}>
+              <DoctorDashboard />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/nurse-view"
-        element={
-          <ProtectedRoute roles={['NURSE']}>
-            <NurseDashboard />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/nurse-view"
+          element={
+            <ProtectedRoute roles={['NURSE']}>
+              <NurseDashboard />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/patient-view"
-        element={
-          <ProtectedRoute roles={['PATIENT']}>
-            <PatientDashboard />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/patient-view"
+          element={
+            <ProtectedRoute roles={['PATIENT']}>
+              <PatientDashboard />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/admin-view"
-        element={
-          <ProtectedRoute roles={['ADMIN']}>
-            <AdminDashboard />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/admin-view"
+          element={
+            <ProtectedRoute roles={['ADMIN']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Encounter Management Routes - Accessible by DOCTOR and NURSE */}
-      <Route
-        path="/encounter-dashboard"
-        element={
-          <ProtectedRoute roles={['DOCTOR', 'NURSE']}>
-            <EncounterDashboard />
-          </ProtectedRoute>
-        }
-      />
+        {/* Encounter Management Routes - Accessible by DOCTOR and NURSE */}
+        <Route
+          path="/encounter-dashboard"
+          element={
+            <ProtectedRoute roles={['DOCTOR', 'NURSE']}>
+              <EncounterDashboard />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/create-encounter"
-        element={
-          <ProtectedRoute roles={['DOCTOR', 'NURSE']}>
-            <CreateEncounterPage />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/create-encounter"
+          element={
+            <ProtectedRoute roles={['DOCTOR', 'NURSE']}>
+              <CreateEncounterPage />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/encounters/:encounterId"
-        element={
-          <ProtectedRoute roles={['DOCTOR', 'NURSE']}>
-            <EncounterDetailPage />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/encounters/:encounterId"
+          element={
+            <ProtectedRoute roles={['DOCTOR', 'NURSE']}>
+              <EncounterDetailPage />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Patient Management Route - Accessible  */}
-      <Route
-        path="/patient-management"
-        element={
-          <ProtectedRoute roles={['DOCTOR', 'NURSE']}>
-            <PatientManagementPage />
-          </ProtectedRoute>
-        }
-      />
+        {/* Patient Management Route - Accessible  */}
+        <Route
+          path="/patient-management"
+          element={
+            <ProtectedRoute roles={['DOCTOR', 'NURSE']}>
+              <PatientManagementPage />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
   );
 };
 
