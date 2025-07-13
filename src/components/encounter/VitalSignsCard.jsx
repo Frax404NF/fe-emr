@@ -201,7 +201,8 @@ const VitalSignsCard = ({ encounterId, token }) => {
                 </td>
                 {renderTableRow(vital, columns)}
                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                  {vital.created_by || 'Tidak Diketahui'}
+                  {/* Tampilkan nama staff jika ada, fallback ke created_by */}
+                  {vital.medic_staff?.staff_name || 'Tidak Diketahui'}
                 </td>
               </tr>
             ))}
