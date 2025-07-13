@@ -277,7 +277,10 @@ const EncounterDetailPage = () => {
           token={currentUser?.access_token}
           isDoctor={currentUser?.role === 'DOCTOR'}
         />
-        <TreatmentsCard />
+        <TreatmentsCard
+          encounterId={encounterId}
+          token={currentUser?.access_token}
+        />
         <DiagnosticTestsCard />
         <SoapNotesCard soapNotes={soap_notes} />
         <DispositionCard
