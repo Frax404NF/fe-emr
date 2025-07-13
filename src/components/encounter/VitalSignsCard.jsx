@@ -39,10 +39,10 @@ const VitalSignsCard = ({ encounterId, token }) => {
   const handleAddVitalSign = async (encounterId, vitalData, token) => {
     try {
       const response = await vitalSignsApi.createVitalSign(encounterId, vitalData, token);
-      
+
       // Response sesuai backend: response.data contains the new vital sign
       const newVitalSign = response.data || response;
-      
+
       // Optimasi: Tambahkan data baru tanpa refetch semua
       setVitalSigns(prev => [
         {
