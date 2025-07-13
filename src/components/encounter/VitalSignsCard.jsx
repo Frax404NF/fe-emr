@@ -94,7 +94,7 @@ const VitalSignsCard = ({ encounterId, token }) => {
       temperature: { label: 'Suhu', unit: '°C' },
       respiratory_rate: { label: 'RR', unit: '/min' },
       oxygen_saturation: { label: 'SpO2', unit: '%' },
-      
+
       // Additional vitals
       pain_scale: { label: 'Skala Nyeri', unit: '/10' },
       gcs: { label: 'GCS', unit: '' },
