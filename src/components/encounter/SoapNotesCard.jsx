@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import DashboardCard from "../ui/DashboardCard";
 import soapNotesApi from "../../services/clinical/soapNotesService";
 
-// Date formatter: "07 Juli 2025, 19:34"
 const formatDateTime = (dateString) => {
   if (!dateString) return "-";
   try {
