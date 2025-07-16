@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
   import DashboardCard from '../ui/DashboardCard';
 import VitalSignsForm from '../form/VitalSignsForm';
 import vitalSignsApi from '../../services/clinical/vitalSignsService';
-// import staffService from '../../services/staffService'; // Disabled untuk sekarang
 
 
 const VitalSignsCard = ({ encounterId, token }) => {
@@ -14,18 +13,14 @@ const VitalSignsCard = ({ encounterId, token }) => {
     const fetchVitalSigns = async () => {
       // Jika encounterId tidak ada, set loading false dan return
       if (!encounterId) {
-        console.log('VitalSignsCard: No encounterId provided');
         setIsLoading(false);
         return;
       }
-      
-      console.log('VitalSignsCard: Fetching vital signs for encounterId:', encounterId);
       setIsLoading(true);
       try {
         const data = await vitalSignsApi.getVitalSignsByEncounter(encounterId, token);
         setVitalSigns(data || []);
       } catch (error) {
-        console.error('VitalSignsCard: Error fetching vital signs:', error);
         // Set data kosong jika error
         setVitalSigns([]);
       } finally {
