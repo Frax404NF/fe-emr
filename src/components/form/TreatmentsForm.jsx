@@ -158,10 +158,12 @@ const TreatmentsForm = ({ onSave, onCancel }) => {
       return;
     }
 
-    // Format administeredAt to ISO string
-    const formattedAdministeredAt = administeredAt.endsWith('Z') 
-      ? administeredAt 
-      : `${administeredAt}:00Z`;
+    // Konversi administeredAt (datetime-local) ke UTC ISO string
+    let formattedAdministeredAt = administeredAt;
+    if (administeredAt) {
+      // administeredAt dari input: '2025-07-17T04:27'
+      formattedAdministeredAt = new Date(administeredAt).toISOString();
+    }
 
     const filledDetails = {};
     [...presetFields, ...customFields].forEach(field => {
@@ -209,7 +211,6 @@ const TreatmentsForm = ({ onSave, onCancel }) => {
               ))}
             </select>
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Waktu Pemberian <span className="text-red-500">*</span>
@@ -217,7 +218,7 @@ const TreatmentsForm = ({ onSave, onCancel }) => {
             <input
               type="datetime-local"
               value={administeredAt}
-              onChange={(e) => setAdministeredAt(e.target.value)}
+              onChange={e => setAdministeredAt(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
