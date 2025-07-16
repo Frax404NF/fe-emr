@@ -192,7 +192,7 @@ const DiagnosesCard = ({ encounterId, token, isDoctor }) => {
           {isDoctor && (
             <button
               onClick={() => setShowForm(!showForm)}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors"
             >
               {showForm ? 'Sembunyikan Form' : '+ Tambah Diagnosis'}
             </button>
@@ -236,8 +236,8 @@ const DiagnosesCard = ({ encounterId, token, isDoctor }) => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-8 text-gray-500">
-            Belum ada diagnosis yang ditambahkan
+          <div className="text-center py-8 border-2 border-dashed rounded-lg">
+            <p className="text-gray-500">Belum ada data diagnosis yang ditambahkan</p>
           </div>
         )}
       </div>

@@ -238,10 +238,10 @@ const VitalSignsCard = ({ encounterId, token }) => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Tanda Vital</h2>
           <button
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors"
             onClick={() => setShowForm(!showForm)}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
           >
-            {showForm ? 'Sembunyikan Form' : '+ Tambah Data'}
+            {showForm ? 'Sembunyikan Form' : '+ Tambah Data TTV'}
           </button>
         </div>
 
@@ -261,7 +261,7 @@ const VitalSignsCard = ({ encounterId, token }) => {
           </div>
         ) : (
           !showForm && (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-gray-500 ">
               <p>Belum ada data tanda vital</p>
               <button
                 onClick={() => setShowForm(true)}
