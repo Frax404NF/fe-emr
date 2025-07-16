@@ -10,7 +10,6 @@ const treatmentApi = {
       const res = await axios.get(`${API_BASE}/encounters/${encounterId}/treatments`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      // Return the full response object for compatibility with TreatmentsCard
       return res.data;
     } catch (error) {
       console.error('Error fetching treatments:', error);
@@ -23,7 +22,12 @@ const treatmentApi = {
       const res = await axios.post(
         `${API_BASE}/encounters/${encounterId}/treatments`,
         treatmentData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
       );
       return res.data;
     } catch (error) {
