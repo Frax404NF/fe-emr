@@ -84,12 +84,7 @@ const ResultsTable = ({ results }) => {
           </tbody>
         </table>
       </div>
-      <button
-        className="mb-2 px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700 transition"
-        onClick={() => setShowDetail(true)}
-      >
-        Lihat Detail
-      </button>
+      {/* Tombol Lihat Detail dihilangkan, trigger dari parent */}
 
       {/* Modal Detail */}
       {showDetail && (
