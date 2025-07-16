@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-  import DashboardCard from '../ui/DashboardCard';
+import DashboardCard from '../ui/DashboardCard';
 import VitalSignsForm from '../form/VitalSignsForm';
 import vitalSignsApi from '../../services/clinical/vitalSignsService';
 
@@ -59,10 +59,8 @@ const VitalSignsCard = ({ encounterId, token }) => {
   // Format tanggal dan waktu yang lebih spesifik
   const formatDateTime = (dateString) => {
     if (!dateString) return '-';
-    
     try {
       const date = new Date(dateString);
-      // Format manual untuk mendapatkan format yang diinginkan: "12 Juli 2025, 13:15"
       const day = date.getDate().toString().padStart(2, '0');
       const monthNames = [
         'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -70,10 +68,13 @@ const VitalSignsCard = ({ encounterId, token }) => {
       ];
       const month = monthNames[date.getMonth()];
       const year = date.getFullYear();
-      const hours = date.getHours().toString().padStart(2, '0');
+      let hours = date.getHours();
       const minutes = date.getMinutes().toString().padStart(2, '0');
-      
-      return `${day} ${month} ${year}, ${hours}:${minutes}`;
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      const hourStr = hours.toString().padStart(2, '0');
+      return `${day} ${month} ${year}, ${hourStr}:${minutes} ${ampm}`;
     } catch (error) {
       return '-';
     }

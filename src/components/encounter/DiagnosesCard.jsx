@@ -1,3 +1,26 @@
+// Format tanggal diagnosis mirip vital sign: '17 Juli 2025 pukul 04.07 AM/PM'
+function formatDiagnosisDate(dateString) {
+  if (!dateString) return '-';
+  try {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const monthNames = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const hourStr = hours.toString().padStart(2, '0');
+    return `${day} ${month} ${year} pukul ${hourStr}.${minutes} ${ampm}`;
+  } catch {
+    return '-';
+  }
+}
 
 import { useState, useEffect } from 'react';
 import DashboardCard from '../ui/DashboardCard';
@@ -224,13 +247,7 @@ const DiagnosesCard = ({ encounterId, token, isDoctor }) => {
                   Diagnosa oleh: {diagnosis.medic_staff?.staff_name || diagnosis.created_by}
                 </div>
                 <div className="text-sm text-gray-500">
-                  Waktu: {new Date(diagnosis.diagnosed_at).toLocaleString('id-ID', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
+                  Waktu Diagnosa: {formatDiagnosisDate(diagnosis.diagnosed_at)}
                 </div>
               </div>
             ))}

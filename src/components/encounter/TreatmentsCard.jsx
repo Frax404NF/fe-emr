@@ -3,7 +3,7 @@ import DashboardCard from '../ui/DashboardCard';
 import treatmentApi from '../../services/clinical/treatmentService';
 import TreatmentsForm from '../form/TreatmentsForm';
 
-// Date formatter: "07 Juli 2025, 19:34"
+// Date formatter: "17 Juli 2025, 03:57 AM/PM"
 const formatDateTime = (dateString) => {
   if (!dateString) return "-";
   try {
@@ -11,9 +11,13 @@ const formatDateTime = (dateString) => {
     const day = date.getDate().toString().padStart(2, "0");
     const month = date.toLocaleString("id-ID", { month: "long" });
     const year = date.getFullYear();
-    const hour = date.getHours().toString().padStart(2, "0");
-    const minute = date.getMinutes().toString().padStart(2, "0");
-    return `${day} ${month} ${year}, ${hour}:${minute}`;
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const hourStr = hours.toString().padStart(2, "0");
+    return `${day} ${month} ${year}, ${hourStr}:${minutes} ${ampm}`;
   } catch {
     return "-";
   }

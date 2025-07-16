@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import DiagnosticForm from "../form/DiagnosticForm";
 import DashboardCard from '../ui/DashboardCard';
 import ResultsTable from "./ResultsTable";
 import diagnosticTestApi from "../../services/clinical/diagnosticTestService";
@@ -42,6 +43,7 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
 
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [detailResults, setDetailResults] = useState(null);
+  const [showForm, setShowForm] = useState(false);
 
   return (
     <DashboardCard>
@@ -49,12 +51,25 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Pemeriksaan Penunjang</h2>
           <button
+            onClick={() => setShowForm(!showForm)}
             className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors"
-            onClick={() => alert('Fitur tambah pemeriksaan penunjang akan segera hadir!')}
           >
-            + Tambah Pemeriksaan
+            {showForm ? 'Sembunyikan Form' : '+ Tambah Pemeriksaan'}
           </button>
         </div>
+        {showForm && (
+          <div className="mb-6">
+            <DiagnosticForm
+              encounterId={encounterId}
+              token={token}
+              onSuccess={() => {
+                setShowForm(false);
+                fetchTests();
+              }}
+              onClose={() => setShowForm(false)}
+            />
+          </div>
+        )}
         {loading ? (
           <div className="text-gray-500">Loading...</div>
         ) : error ? (
@@ -168,6 +183,20 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
                 <div className="mt-2 text-sm text-gray-600">Catatan: {detailResults.result_notes}</div>
               )}
             </div>
+          </div>
+        )}
+        {/* Inline Form Tambah Pemeriksaan Penunjang */}
+        {showForm && (
+          <div className="mb-6">
+            <DiagnosticForm
+              encounterId={encounterId}
+              token={token}
+              onSuccess={() => {
+                setShowForm(false);
+                fetchTests();
+              }}
+              onClose={() => setShowForm(false)}
+            />
           </div>
         )}
       </div>
