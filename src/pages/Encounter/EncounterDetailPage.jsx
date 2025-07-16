@@ -119,7 +119,7 @@ const EncounterDetailPage = () => {
   }
 
   const { patient, status, triage_level, encounter_start_time, encounter_end_time, 
-          chief_complaint, soap_notes } = currentEncounter;
+          chief_complaint } = currentEncounter;
   const statusColor = getStatusConfig(status).color;
   const triageColor = getTriageColor(triage_level);
 
@@ -282,7 +282,10 @@ const EncounterDetailPage = () => {
           token={currentUser?.access_token}
         />
         <DiagnosticTestsCard />
-        <SoapNotesCard soapNotes={soap_notes} />
+        <SoapNotesCard
+          encounterId={encounterId}
+          token={currentUser?.access_token}
+        />
         <DispositionCard
           encounter={currentEncounter}
           currentUser={currentUser}
