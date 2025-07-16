@@ -266,13 +266,7 @@ const TreatmentsCard = ({ encounterId, token }) => {
         ) : (
           !showForm && (
             <div className="text-center py-8 border-2 border-dashed rounded-lg">
-              <p className="text-gray-500 mb-3">Belum ada data terapi</p>
-              <button
-                onClick={() => setShowForm(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
-              >
-                + Tambah Terapi Pertama
-              </button>
+              <p className="text-gray-500">Belum ada data terapi</p>
             </div>
           )
         )}
