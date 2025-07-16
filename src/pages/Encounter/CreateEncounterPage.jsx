@@ -178,7 +178,7 @@ const CreateEncounterPage = () => {
       });
 
       setTimeout(
-        () => navigate(`/encounter/${newEncounter.encounter_id}`),
+        () => navigate(`/encounters/${newEncounter.encounter_id}`),
         2000
       );
     } catch (error) {
