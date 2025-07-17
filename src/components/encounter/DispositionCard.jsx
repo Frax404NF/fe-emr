@@ -26,6 +26,14 @@ const DispositionCard = ({
     const newStatus = e.target.value;
     setSelectedStatus(newStatus);
 
+    // Cegah perawat mengubah ke status final
+    const isFinalStatus = ['DISCHARGED', 'ADMITTED'].includes(newStatus);
+    if (currentUser?.role === 'NURSE' && isFinalStatus) {
+      alert('Hanya dokter yang dapat mengubah status final encounter.');
+      setSelectedStatus('');
+      return;
+    }
+
     if (newStatus && window.confirm(
       `Apakah Anda yakin ingin mengubah status dari "${statusInfo.displayName}" ke "${
         getStatusConfig(newStatus).displayName}"?`
