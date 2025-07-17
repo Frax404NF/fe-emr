@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import UpdateStatusModal from "./UpdateStatusModal";
 import DiagnosticForm from "../form/DiagnosticForm";
 import DashboardCard from '../ui/DashboardCard';
 import ResultsTable from "./ResultsTable";
@@ -44,6 +45,9 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [detailResults, setDetailResults] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  // State for update status modal
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [selectedTest, setSelectedTest] = useState(null);
 
   return (
     <DashboardCard>
@@ -86,8 +90,8 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
                         style={{ background: test.status === "REQUESTED" ? "#facc15" : test.status === "IN_PROGRESS" ? "#38bdf8" : test.status === "COMPLETED" ? "#4ade80" : test.status === "RESULT_VERIFIED" ? "#a78bfa" : "#e5e7eb", color: "#1e293b" }}>
                         {test.status}
                       </span>
-                      <div className="mt-1 text-sm text-black"><span className="font-bold">Petugas:</span> {test.medic_staff?.staff_name || "-"}</div>
-                      {/* Waktu Request Pemeriksaan disembunyikan, hanya di modal detail */}
+                        <div className="mt-1 text-sm text-black"> <span className="font-bold">Petugas:</span> {test.processed_staff?.staff_name || test.requested_staff?.staff_name || "-"}
+                        </div>
                     </div>
                   </div>
                   <>
@@ -98,7 +102,10 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
                     <div className="flex justify-end mt-4 gap-2">
                       <button
                         className="px-4 py-2 bg-blue-600 text-white text-sm rounded shadow hover:bg-blue-700 transition"
-                        onClick={() => alert(`Update status untuk test ID ${test.id || test.test_id}`)}
+                        onClick={() => {
+                          setSelectedTest(test);
+                          setShowUpdateModal(true);
+                        }}
                       >
                         Update Status
                       </button>
@@ -184,6 +191,18 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
               )}
             </div>
           </div>
+        )}
+        {/* Modal Update Status Pemeriksaan */}
+        {showUpdateModal && selectedTest && (
+          <UpdateStatusModal
+            test={selectedTest}
+            token={token}
+            onClose={() => setShowUpdateModal(false)}
+            onSuccess={() => {
+              setShowUpdateModal(false);
+              fetchTests();
+            }}
+          />
         )}
         {/* Inline Form Tambah Pemeriksaan Penunjang */}
         {showForm && (
