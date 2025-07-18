@@ -39,52 +39,39 @@ const ResultsTable = ({ results }) => {
     );
   }
 
-  // If results is object
   const columns = Object.keys(results);
-  // Jika kolom < 5, tampilkan semua data secara vertikal
-  if (columns.length < 5) {
-    return (
-      <div className="w-full">
-        <div className="max-h-80 overflow-y-auto border border-gray-200 rounded-lg mb-4 p-2">
-          <table className="w-full">
-            <tbody>
-              {columns.map((col) => (
-                <tr key={col} className="border-b last:border-b-0">
-                  <td className="px-4 py-2 font-semibold text-gray-700 bg-gray-50 w-1/3 align-top capitalize">
-                    {col.replace(/_/g, " ")}
-                  </td>
-                  <td className="px-4 py-2 text-gray-800 w-2/3 break-words">
-                    {renderCell(results[col], col)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    );
-  }
-  // Jika kolom >= 5, tampilkan summaryKeys di awal, tombol detail untuk semua data
+  const showSummary = columns.length > 6;
   const summaryKeys = IMPORTANT_KEYS.filter((key) => columns.includes(key));
+
   return (
     <div className="w-full">
       <div className="max-h-80 overflow-y-auto border border-gray-200 rounded-lg mb-4 p-2">
         <table className="w-full">
           <tbody>
-            {summaryKeys.map((col) => (
-              <tr key={col} className="border-b last:border-b-0">
-                <td className="px-4 py-2 font-semibold text-gray-700 bg-gray-50 w-1/3 align-top capitalize">
-                  {col.replace(/_/g, " ")}
-                </td>
-                <td className="px-4 py-2 text-gray-800 w-2/3 break-words">
-                  {renderCell(results[col], col)}
-                </td>
-              </tr>
-            ))}
+            {showSummary
+              ? summaryKeys.map((col) => (
+                  <tr key={col} className="border-b last:border-b-0">
+                    <td className="px-4 py-2 font-semibold text-gray-700 bg-gray-50 w-1/3 align-top capitalize">
+                      {col.replace(/_/g, " ")}
+                    </td>
+                    <td className="px-4 py-2 text-gray-800 w-2/3 break-words">
+                      {renderCell(results[col], col)}
+                    </td>
+                  </tr>
+                ))
+              : columns.map((col) => (
+                  <tr key={col} className="border-b last:border-b-0">
+                    <td className="px-4 py-2 font-semibold text-gray-700 bg-gray-50 w-1/3 align-top capitalize">
+                      {col.replace(/_/g, " ")}
+                    </td>
+                    <td className="px-4 py-2 text-gray-800 w-2/3 break-words">
+                      {renderCell(results[col], col)}
+                    </td>
+                  </tr>
+                ))}
           </tbody>
         </table>
       </div>
-      {/* Tombol Lihat Detail dihilangkan, trigger dari parent */}
 
       {/* Modal Detail */}
       {showDetail && (
@@ -136,6 +123,10 @@ function renderCell(value, col) {
     return (
       <a href={value} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Lihat File</a>
     );
+  }
+  // If value is array, render as comma separated
+  if (Array.isArray(value)) {
+    return value.join(", ");
   }
   // If value is array, render as comma separated
   if (Array.isArray(value)) {
