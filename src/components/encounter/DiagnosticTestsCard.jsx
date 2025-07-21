@@ -1,23 +1,86 @@
 import { useEffect, useState, useCallback } from "react";
 import UpdateStatusModal from "./UpdateStatusModal";
 import DiagnosticForm from "../form/DiagnosticForm";
-import DashboardCard from '../ui/DashboardCard';
+import DashboardCard from "../ui/DashboardCard";
 import ResultsTable from "./ResultsTable";
 import diagnosticTestApi from "../../services/clinical/diagnosticTestService";
-
 
 function formatCustomDate(dateString) {
   if (!dateString) return "-";
   const date = new Date(dateString);
-  const options = { day: '2-digit', month: 'long', year: 'numeric' };
-  const datePart = date.toLocaleDateString('id-ID', options);
+  const options = { day: "2-digit", month: "long", year: "numeric" };
+  const datePart = date.toLocaleDateString("id-ID", options);
   let hours = date.getHours();
-  const minutes = date.getMinutes().toString().padStart(2, '0');
-  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const ampm = hours >= 12 ? "PM" : "AM";
   hours = hours % 12;
   hours = hours ? hours : 12;
   return `${datePart}, Pukul ${hours}:${minutes} ${ampm}`;
 }
+
+// Helper Components for Modal
+const InfoItem = ({ label, value }) => (
+  <div className="space-y-1">
+    <div className="text-sm font-medium text-gray-600">{label}:</div>
+    <div className="text-sm text-gray-800">
+      {value ? (
+        <span className="bg-white px-3 py-1 rounded border border-gray-200">
+          {value}
+        </span>
+      ) : (
+        <span className="italic text-gray-400">Belum tersedia</span>
+      )}
+    </div>
+  </div>
+);
+
+const ResultValue = ({ column, value }) => {
+  if (typeof value === "string" && value.startsWith("http")) {
+    return (
+      <a
+        href={value}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center text-blue-600 hover:text-blue-800 underline transition-colors"
+      >
+        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        </svg>
+        Lihat File
+      </a>
+    );
+  }
+
+  if (Array.isArray(value)) {
+    return (
+      <div className="space-y-1">
+        {value.map((item, index) => (
+          <span key={index} className="inline-block bg-gray-100 text-gray-700 px-2 py-1 rounded-md text-sm mr-1 mb-1">
+            {item}
+          </span>
+        ))}
+      </div>
+    );
+  }
+
+  if (typeof value === "object" && value !== null) {
+    return (
+      <div className="bg-gray-100 rounded p-3 font-mono text-xs text-gray-600 overflow-x-auto">
+        {JSON.stringify(value, null, 2)}
+      </div>
+    );
+  }
+
+  if (column === "result_notes") {
+    return <span className="italic text-gray-600 leading-relaxed">{value}</span>;
+  }
+
+  if (value !== undefined && value !== null && value !== "") {
+    return <span className="text-gray-800">{value}</span>;
+  }
+
+  return <span className="text-gray-400 italic">Tidak ada data</span>;
+};
 
 const DiagnosticTestsCard = ({ encounterId, token }) => {
   const [tests, setTests] = useState([]);
@@ -28,7 +91,10 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
     setLoading(true);
     setError("");
     try {
-      const data = await diagnosticTestApi.getDiagnosticTestsByEncounter(encounterId, token);
+      const data = await diagnosticTestApi.getDiagnosticTestsByEncounter(
+        encounterId,
+        token
+      );
       setTests(data);
     } catch (err) {
       setError(err.message || "Gagal mengambil data pemeriksaan penunjang");
@@ -58,7 +124,7 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
             onClick={() => setShowForm(!showForm)}
             className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors"
           >
-            {showForm ? 'Sembunyikan Form' : '+ Tambah Pemeriksaan'}
+            {showForm ? "Sembunyikan Form" : "+ Tambah Pemeriksaan"}
           </button>
         </div>
         {showForm && (
@@ -82,21 +148,53 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
           <div>
             {tests && tests.length > 0 ? (
               tests.map((test) => (
-                <div key={test.id || test.test_id} className="mb-6 border rounded-lg p-4 bg-gray-50">
+                <div
+                  key={test.id || test.test_id}
+                  className="mb-6 border rounded-lg p-4 bg-gray-50"
+                >
                   <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-2">
                     <div>
-                      <span className="font-semibold">{test.name || test.test_name}</span>
-                      <span className="ml-2 px-2 py-1 rounded text-xs font-bold"
-                        style={{ background: test.status === "REQUESTED" ? "#facc15" : test.status === "IN_PROGRESS" ? "#38bdf8" : test.status === "COMPLETED" ? "#4ade80" : test.status === "RESULT_VERIFIED" ? "#a78bfa" : "#e5e7eb", color: "#1e293b" }}>
+                      <span className="font-semibold">
+                        {test.name || test.test_name}
+                      </span>
+                      <span
+                        className="ml-2 px-2 py-1 rounded text-xs font-bold"
+                        style={{
+                          background:
+                            test.status === "REQUESTED"
+                              ? "#facc15"
+                              : test.status === "IN_PROGRESS"
+                                ? "#38bdf8"
+                                : test.status === "COMPLETED"
+                                  ? "#4ade80"
+                                  : test.status === "RESULT_VERIFIED"
+                                    ? "#a78bfa"
+                                    : "#e5e7eb",
+                          color: "#1e293b",
+                        }}
+                      >
                         {test.status}
                       </span>
-                        <div className="mt-1 text-sm text-black"> <span className="font-bold">Petugas:</span> {test.processed_staff?.staff_name || test.requested_staff?.staff_name || "-"}
-                        </div>
+                      <div className="mt-1 text-sm text-black">
+                        {" "}
+                        <span className="font-bold">Diajukan oleh:</span>{" "}
+                        {test.requested_staff?.staff_name || "-"}{" "}
+                      </div>
                     </div>
                   </div>
                   <>
-                    <div className={test.results ? "bg-white rounded-lg shadow border border-gray-200 p-4 mt-4" : "bg-white rounded-lg shadow border border-gray-200 p-4 mt-4 flex items-center justify-center"}>
-                      {test.results ? <ResultsTable results={test.results} /> : <span className="text-gray-500">Belum ada hasil</span>}
+                    <div
+                      className={
+                        test.results
+                          ? "bg-white rounded-lg shadow border border-gray-200 p-4 mt-4"
+                          : "bg-white rounded-lg shadow border border-gray-200 p-4 mt-4 flex items-center justify-center"
+                      }
+                    >
+                      {test.results ? (
+                        <ResultsTable results={test.results} />
+                      ) : (
+                        <span className="text-gray-500">Belum ada hasil</span>
+                      )}
                     </div>
                     {/* Kolom aksi di bawah card hasil, selalu tampil */}
                     <div className="flex justify-end mt-4 gap-2">
@@ -121,77 +219,152 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
                     </div>
                   </>
                   {test.result_notes && (
-                    <div className="mt-2 text-sm text-gray-600">Catatan: {test.result_notes}</div>
+                    <div className="mt-2 text-sm text-gray-600">
+                      Catatan: {test.result_notes}
+                    </div>
                   )}
                 </div>
               ))
             ) : (
               <div className="text-center py-8 border-2 border-dashed rounded-lg">
-                <p className="text-gray-500">Belum ada data pemeriksaan penunjang</p>
+                <p className="text-gray-500">
+                  Belum ada data pemeriksaan penunjang
+                </p>
               </div>
             )}
           </div>
         )}
-        {/* Modal Detail Hasil Pemeriksaan */}
+
+        {/* Enhanced Modal Detail Hasil Pemeriksaan */}
         {showDetailModal && detailResults && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-            <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full p-6 relative overflow-x-auto max-h-[90vh] overflow-y-auto">
-              <button
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl"
-                onClick={() => setShowDetailModal(false)}
-                aria-label="Tutup"
-              >
-                &times;
-              </button>
-              <h3 className="text-lg font-bold mb-4">Detail Hasil Pemeriksaan</h3>
-              {/* Info waktu detail di modal */}
-              <div className="mb-4">
-                <div className="text-sm text-black mb-1">
-                  <span className="font-bold">Waktu Request Pemeriksaan:</span> {formatCustomDate(detailResults.requested_at)}
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+            <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full mx-4 relative max-h-[95vh] overflow-hidden">
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50 rounded-t-xl">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800">
+                    Detail Hasil Pemeriksaan
+                  </h3>
+                  {(detailResults.type || detailResults.test_type) && (
+                    <span className="inline-block mt-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium border border-blue-200">
+                      {detailResults.type || detailResults.test_type}
+                    </span>
+                  )}
                 </div>
-                <div className="text-sm text-black mb-1">
-                  <span className="font-bold">Waktu Pemeriksaan Dimulai:</span> {detailResults.processed_at ? formatCustomDate(detailResults.processed_at) : <span className="italic text-gray-500">-</span>}
-                </div>
-                <div className="text-sm text-black mb-1">
-                  <span className="font-bold">Waktu Selesai:</span> {detailResults.completed_at ? formatCustomDate(detailResults.completed_at) : <span className="italic text-gray-500">-</span>}
-                </div>
+                <button
+                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-200"
+                  onClick={() => setShowDetailModal(false)}
+                  aria-label="Tutup"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
-              <div className="bg-white rounded-lg shadow border border-gray-200 p-4 mb-2">
-                <table className="w-full">
-                  <tbody>
+
+              {/* Content */}
+              <div className="overflow-y-auto max-h-[calc(95vh-180px)]">
+                <div className="p-6 space-y-6">
+                  {/* Informasi Waktu Section */}
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-5 border border-blue-100">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                      <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Informasi Pemeriksaan
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <InfoItem
+                        label="Pelaksana Pemeriksaan"
+                        value={detailResults.processed_staff?.staff_name}
+                      />
+                      <InfoItem
+                        label="Waktu Request"
+                        value={formatCustomDate(detailResults.requested_at)}
+                      />
+                      <InfoItem
+                        label="Waktu Dimulai"
+                        value={detailResults.processed_at ? formatCustomDate(detailResults.processed_at) : null}
+                      />
+                      <InfoItem
+                        label="Waktu Selesai"
+                        value={detailResults.completed_at ? formatCustomDate(detailResults.completed_at) : null}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Hasil Pemeriksaan Section */}
+                  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                    <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                      <h4 className="text-lg font-semibold text-gray-800 flex items-center">
+                        <svg className="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Hasil Pemeriksaan
+                      </h4>
+                    </div>
+                    
                     {detailResults.results ? (
-                      Object.keys(detailResults.results).map((col) => (
-                        <tr key={col} className="border-b last:border-b-0">
-                          <td className="px-4 py-2 font-semibold text-gray-700 bg-gray-50 w-1/3 align-top capitalize">
-                            {col.replace(/_/g, " ")}
-                          </td>
-                          <td className="px-4 py-2 text-gray-800 w-2/3 break-words">
-                            {typeof detailResults.results[col] === "string" && detailResults.results[col].startsWith("http") ? (
-                              <a href={detailResults.results[col]} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Lihat File</a>
-                            ) : Array.isArray(detailResults.results[col]) ? (
-                              detailResults.results[col].join(", ")
-                            ) : typeof detailResults.results[col] === "object" && detailResults.results[col] !== null ? (
-                              <span className="font-mono text-xs text-gray-500">{JSON.stringify(detailResults.results[col])}</span>
-                            ) : col === "result_notes" ? (
-                              <span className="italic text-gray-600">{detailResults.results[col]}</span>
-                            ) : (
-                              detailResults.results[col] !== undefined && detailResults.results[col] !== null && detailResults.results[col] !== "" ? detailResults.results[col] : "-"
-                            )}
-                          </td>
-                        </tr>
-                      ))
+                      <div className="overflow-x-auto">
+                        <table className="w-full divide-y divide-gray-200">
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {Object.keys(detailResults.results).map((col, index) => (
+                              <tr key={col} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                <td className="px-6 py-4 font-medium text-gray-700 w-1/3 align-top">
+                                  <div className="capitalize font-semibold">
+                                    {col.replace(/_/g, " ")}
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4 text-gray-800 w-2/3">
+                                  <ResultValue column={col} value={detailResults.results[col]} />
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     ) : (
-                      <tr><td colSpan={2} className="text-center text-gray-400 py-4">Belum ada hasil pemeriksaan</td></tr>
+                      <div className="px-6 py-12 text-center">
+                        <svg className="w-12 h-12 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p className="text-gray-500 text-lg">Belum ada hasil pemeriksaan</p>
+                      </div>
                     )}
-                  </tbody>
-                </table>
+                  </div>
+
+                  {/* Catatan Section */}
+                  {detailResults.result_notes && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <h4 className="text-sm font-semibold text-yellow-800 mb-2 flex items-center">
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Catatan
+                      </h4>
+                      <p className="text-yellow-700 text-sm italic">
+                        {detailResults.result_notes}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
-              {detailResults.result_notes && (
-                <div className="mt-2 text-sm text-gray-600">Catatan: {detailResults.result_notes}</div>
-              )}
+
+              {/* Footer */}
+              <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => setShowDetailModal(false)}
+                    className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 font-medium"
+                  >
+                    Tutup
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}
+
         {/* Modal Update Status Pemeriksaan */}
         {showUpdateModal && selectedTest && (
           <UpdateStatusModal
@@ -204,6 +377,7 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
             }}
           />
         )}
+
         {/* Inline Form Tambah Pemeriksaan Penunjang */}
         {showForm && (
           <div className="mb-6">
