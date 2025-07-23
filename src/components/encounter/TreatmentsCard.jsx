@@ -3,7 +3,6 @@ import DashboardCard from '../ui/DashboardCard';
 import treatmentApi from '../../services/clinical/treatmentService';
 import TreatmentsForm from '../form/TreatmentsForm';
 
-// Date formatter: "17 Juli 2025, 03:57 AM/PM"
 const formatDateTime = (dateString) => {
   if (!dateString) return "-";
   try {
@@ -117,44 +116,151 @@ const TreatmentTable = ({ treatment, onViewDetail }) => {
 
 const TreatmentDetailModal = ({ open, onClose, treatment }) => {
   if (!open || !treatment) return null;
+  
   const details = treatment.treatments_details || treatment.details || {};
+
+  // Helper component for consistent info display
+  const InfoItem = ({ label, value }) => (
+    <div className="space-y-1">
+      <div className="text-sm font-medium text-gray-600">{label}:</div>
+      <div className="text-sm text-gray-800">
+        {value || <span className="italic text-gray-400">Belum tersedia</span>}
+      </div>
+    </div>
+  );
+
+  // Value rendering with type detection
+  const DetailValue = ({ value }) => {
+    if (typeof value === 'string' && value.startsWith('http')) {
+      return (
+        <a 
+          href={value} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="inline-flex items-center text-blue-600 hover:text-blue-800 underline transition-colors"
+        >
+          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+          Lihat File
+        </a>
+      );
+    }
+
+    if (Array.isArray(value)) {
+      return (
+        <div className="space-y-1">
+          {value.map((item, index) => (
+            <span key={index} className="inline-block bg-gray-100 text-gray-700 px-2 py-1 rounded-md text-sm mr-1 mb-1">
+              {item}
+            </span>
+          ))}
+        </div>
+      );
+    }
+
+    if (typeof value === 'object' && value !== null) {
+      return (
+        <pre className="bg-gray-100 rounded p-3 font-mono text-xs text-gray-600 overflow-x-auto">
+          {JSON.stringify(value, null, 2)}
+        </pre>
+      );
+    }
+
+    return <span>{value}</span>;
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 p-4">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold">Detail Terapi/Prosedur</h3>
-            <button
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              ✕
-            </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-4 relative max-h-[95vh] overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50 rounded-t-xl">
+          <div>
+            <h3 className="text-xl font-bold text-gray-800">Detail Terapi/Prosedur</h3>
+            <span className="inline-block mt-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium border border-blue-200">
+              {treatment.treatment_type || treatment.type || '-'}
+            </span>
           </div>
-          <div className="space-y-4">
-            <div>
-              <h4 className="text-sm font-medium text-gray-500">Jenis Terapi/Prosedur</h4>
-              <p className="mt-1">{treatment.treatment_type || treatment.type || '-'}</p>
-            </div>
-            <div>
-              <h4 className="text-sm font-medium text-gray-500">Waktu</h4>
-              <p className="mt-1">{formatDateTime(treatment.administered_at)}</p>
-            </div>
-            <div>
-              <h4 className="text-sm font-medium text-gray-500">Staff</h4>
-              <p className="mt-1">{treatment.medic_staff?.staff_name || '-'}</p>
-            </div>
-            {Object.keys(details).map((key) => (
-              <div key={key}>
-                <h4 className="text-sm font-medium text-gray-500 capitalize">{key.replace(/_/g, ' ')}</h4>
-                <p className="mt-1 whitespace-pre-line text-gray-800 bg-gray-50 p-3 rounded-md">{details[key] || '-'}</p>
+          <button
+            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-200"
+            onClick={onClose}
+            aria-label="Tutup"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="overflow-y-auto max-h-[calc(95vh-180px)]">
+          <div className="p-6 space-y-6">
+            {/* Informasi Terapi Section */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-5 border border-blue-100">
+              <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                Informasi Terapi
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InfoItem 
+                  label="Jenis Terapi/Prosedur" 
+                  value={treatment.treatment_type || treatment.type || '-'} 
+                />
+                <InfoItem 
+                  label="Waktu Pelaksanaan" 
+                  value={formatDateTime(treatment.administered_at)} 
+                />
+                <InfoItem 
+                  label="Diberikan oleh" 
+                  value={treatment.medic_staff?.staff_name || '-'} 
+                />
               </div>
-            ))}
+            </div>
+
+            {/* Detail Terapi Section */}
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <h4 className="text-lg font-semibold text-gray-800 flex items-center">
+                  Detail Terapi
+                </h4>
+              </div>
+              
+              {Object.keys(details).length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full divide-y divide-gray-200">
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {Object.entries(details).map(([key, value], index) => (
+                        <tr key={key} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                          <td className="px-6 py-4 font-medium text-gray-700 w-1/3 align-top">
+                            <div className="capitalize font-semibold">
+                              {key.replace(/_/g, " ")}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-gray-800 w-2/3">
+                            <DetailValue value={value} />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="px-6 py-12 text-center">
+                  <svg className="w-12 h-12 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <p className="text-gray-500 text-lg">Belum ada detail terapi</p>
+                </div>
+              )}
+            </div>
           </div>
-          <div className="flex justify-end mt-6">
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
+          <div className="flex justify-end">
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm"
+              className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 font-medium"
             >
               Tutup
             </button>
