@@ -1,38 +1,47 @@
-// Format tanggal diagnosis mirip vital sign: '17 Juli 2025 pukul 04.07 AM/PM'
+import { useState, useEffect } from "react";
+import DashboardCard from "../ui/DashboardCard";
+import diagnosisService from "../../services/clinical/diagnosisService";
+
 function formatDiagnosisDate(dateString) {
-  if (!dateString) return '-';
+  if (!dateString) return "-";
   try {
     const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, "0");
     const monthNames = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
     ];
     const month = monthNames[date.getMonth()];
     const year = date.getFullYear();
     let hours = date.getHours();
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
     hours = hours % 12;
     hours = hours ? hours : 12;
-    const hourStr = hours.toString().padStart(2, '0');
+    const hourStr = hours.toString().padStart(2, "0");
     return `${day} ${month} ${year} pukul ${hourStr}.${minutes} ${ampm}`;
   } catch {
-    return '-';
+    return "-";
   }
 }
 
-import { useState, useEffect } from 'react';
-import DashboardCard from '../ui/DashboardCard';
-import diagnosisService from '../../services/clinical/diagnosisService';
-
 const DiagnosisForm = ({ encounterId, token, onDiagnosisAdded, onCancel }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleSearch = async (term) => {
     if (term.length < 2) {
@@ -40,13 +49,13 @@ const DiagnosisForm = ({ encounterId, token, onDiagnosisAdded, onCancel }) => {
       return;
     }
     setLoading(true);
-    setError('');
+    setError("");
     try {
       const result = await diagnosisService.searchICD10(term, 10, token);
       setSearchResults(result.data || []);
     } catch (error) {
       setSearchResults([]);
-      setError('Gagal mencari diagnosis. Silakan coba lagi.');
+      setError("Gagal mencari diagnosis. Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
@@ -54,23 +63,28 @@ const DiagnosisForm = ({ encounterId, token, onDiagnosisAdded, onCancel }) => {
 
   const handleAddDiagnosis = async () => {
     if (!selectedDiagnosis) return;
-    
+
     setIsSubmitting(true);
-    setError('');
-    
+    setError("");
+
     try {
-      await diagnosisService.createDiagnosis(encounterId, selectedDiagnosis.code, token);
-      
+      await diagnosisService.createDiagnosis(
+        encounterId,
+        selectedDiagnosis.code,
+        token
+      );
+
       // Reset form state
-      setSearchTerm('');
+      setSearchTerm("");
       setSelectedDiagnosis(null);
       setSearchResults([]);
-      
+
       // Notify parent component
       onDiagnosisAdded();
-      
     } catch (error) {
-      setError(error.message || 'Gagal menambahkan diagnosis. Silakan coba lagi.');
+      setError(
+        error.message || "Gagal menambahkan diagnosis. Silakan coba lagi."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -78,17 +92,17 @@ const DiagnosisForm = ({ encounterId, token, onDiagnosisAdded, onCancel }) => {
 
   // Add onCancel prop to allow parent to close the form
   const handleCancel = () => {
-    setSearchTerm('');
+    setSearchTerm("");
     setSelectedDiagnosis(null);
     setSearchResults([]);
-    setError('');
-    if (typeof onCancel === 'function') onCancel();
+    setError("");
+    if (typeof onCancel === "function") onCancel();
   };
 
   return (
     <div className="bg-white p-6 rounded-lg border border-gray-200 mt-4 mb-4">
       <h3 className="text-lg font-medium mb-4">Tambah Diagnosis</h3>
-      
+
       <div className="space-y-4">
         {/* Search Input */}
         <div>
@@ -99,7 +113,7 @@ const DiagnosisForm = ({ encounterId, token, onDiagnosisAdded, onCancel }) => {
             type="text"
             placeholder="Masukkan kata kunci diagnosis..."
             value={searchTerm}
-            onChange={e => {
+            onChange={(e) => {
               setSearchTerm(e.target.value);
               handleSearch(e.target.value);
             }}
@@ -118,12 +132,14 @@ const DiagnosisForm = ({ encounterId, token, onDiagnosisAdded, onCancel }) => {
         {/* Search Results */}
         {searchResults.length > 0 && (
           <div className="border border-gray-200 rounded-md max-h-60 overflow-y-auto">
-            {searchResults.map(item => (
+            {searchResults.map((item) => (
               <div
                 key={item.code}
                 onClick={() => setSelectedDiagnosis(item)}
                 className={`cursor-pointer px-3 py-2 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 ${
-                  selectedDiagnosis?.code === item.code ? 'bg-blue-50 border-blue-200' : ''
+                  selectedDiagnosis?.code === item.code
+                    ? "bg-blue-50 border-blue-200"
+                    : ""
                 }`}
               >
                 <div className="font-medium text-gray-900">{item.code}</div>
@@ -136,10 +152,16 @@ const DiagnosisForm = ({ encounterId, token, onDiagnosisAdded, onCancel }) => {
         {/* Selected Diagnosis */}
         {selectedDiagnosis && (
           <div className="bg-blue-50 p-4 rounded-md border border-blue-200">
-            <h4 className="text-sm font-medium text-gray-800 mb-2">Diagnosis Terpilih</h4>
+            <h4 className="text-sm font-medium text-gray-800 mb-2">
+              Diagnosis Terpilih
+            </h4>
             <div className="text-sm">
-              <span className="font-medium text-blue-900">{selectedDiagnosis.code}</span>
-              <span className="text-gray-600 ml-2">- {selectedDiagnosis.name}</span>
+              <span className="font-medium text-blue-900">
+                {selectedDiagnosis.code}
+              </span>
+              <span className="text-gray-600 ml-2">
+                - {selectedDiagnosis.name}
+              </span>
             </div>
           </div>
         )}
@@ -153,21 +175,21 @@ const DiagnosisForm = ({ encounterId, token, onDiagnosisAdded, onCancel }) => {
 
         {/* Action Buttons */}
         <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={handleCancel}
             disabled={isSubmitting}
             className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Batal
           </button>
-          <button 
+          <button
             type="button"
-            onClick={handleAddDiagnosis} 
+            onClick={handleAddDiagnosis}
             disabled={isSubmitting || !selectedDiagnosis}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {isSubmitting ? 'Menyimpan...' : 'Tambah Diagnosis'}
+            {isSubmitting ? "Menyimpan..." : "Tambah Diagnosis"}
           </button>
         </div>
       </div>
@@ -188,7 +210,10 @@ const DiagnosesCard = ({ encounterId, token, isDoctor }) => {
       }
       setIsLoading(true);
       try {
-        const result = await diagnosisService.getDiagnosesByEncounter(encounterId, token);
+        const result = await diagnosisService.getDiagnosesByEncounter(
+          encounterId,
+          token
+        );
         setDiagnoses(result || []);
       } catch (error) {
         setDiagnoses([]);
@@ -202,8 +227,9 @@ const DiagnosesCard = ({ encounterId, token, isDoctor }) => {
   const handleDiagnosisAdded = () => {
     setShowForm(false);
     setIsLoading(true);
-    diagnosisService.getDiagnosesByEncounter(encounterId, token)
-      .then(result => setDiagnoses(result || []))
+    diagnosisService
+      .getDiagnosesByEncounter(encounterId, token)
+      .then((result) => setDiagnoses(result || []))
       .finally(() => setIsLoading(false));
   };
 
@@ -217,11 +243,11 @@ const DiagnosesCard = ({ encounterId, token, isDoctor }) => {
               onClick={() => setShowForm(!showForm)}
               className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors"
             >
-              {showForm ? 'Sembunyikan Form' : '+ Tambah Diagnosis'}
+              {showForm ? "Sembunyikan Form" : "+ Tambah Diagnosis"}
             </button>
           )}
         </div>
-        
+
         {showForm && (
           <DiagnosisForm
             encounterId={encounterId}
@@ -237,14 +263,18 @@ const DiagnosesCard = ({ encounterId, token, isDoctor }) => {
           </div>
         ) : diagnoses.length > 0 ? (
           <div className="space-y-3">
-            {diagnoses.map(diagnosis => (
-              <div key={diagnosis.diagnosis_id} className="border-b border-gray-200 pb-3 last:border-b-0">
+            {diagnoses.map((diagnosis) => (
+              <div
+                key={diagnosis.diagnosis_id}
+                className="border-b border-gray-200 pb-3 last:border-b-0"
+              >
                 <div className="font-medium text-gray-900">
                   <span className="text-blue-600">{diagnosis.icd10_code}</span>
                   <span className="ml-2">- {diagnosis.diagnoses_name}</span>
                 </div>
                 <div className="text-sm text-gray-600 mt-1 mb-2">
-                  Diagnosa oleh: {diagnosis.medic_staff?.staff_name || diagnosis.created_by}
+                  Didiagnosa oleh:{" "}
+                  {diagnosis.medic_staff?.staff_name || diagnosis.created_by}
                 </div>
                 <div className="text-sm text-gray-500">
                   Waktu Diagnosa: {formatDiagnosisDate(diagnosis.diagnosed_at)}
@@ -254,7 +284,9 @@ const DiagnosesCard = ({ encounterId, token, isDoctor }) => {
           </div>
         ) : (
           <div className="text-center py-8 border-2 border-dashed rounded-lg">
-            <p className="text-gray-500">Belum ada data diagnosis yang ditambahkan</p>
+            <p className="text-gray-500">
+              Belum ada data diagnosis yang ditambahkan
+            </p>
           </div>
         )}
       </div>

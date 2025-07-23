@@ -2,22 +2,33 @@ import { useState, useEffect, useCallback } from "react";
 import DashboardCard from "../ui/DashboardCard";
 import soapNotesApi from "../../services/clinical/soapNotesService";
 
-const formatDateTime = (dateString) => {
+const formatCustomDate = (dateString) => {
   if (!dateString) return "-";
-  try {
-    const date = new Date(dateString);
-    // Get day, month, year
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = date.toLocaleString("id-ID", { month: "long" });
-    const year = date.getFullYear();
-    // Get hour and minute in 24h format
-    const hour = date.getHours().toString().padStart(2, "0");
-    const minute = date.getMinutes().toString().padStart(2, "0");
-    return `${day} ${month} ${year}, ${hour}:${minute}`;
-  } catch {
-    return "-";
-  }
+  const date = new Date(dateString);
+  const options = { day: "2-digit", month: "long", year: "numeric" };
+  const datePart = date.toLocaleDateString("id-ID", options);
+  let hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  return `${datePart}, Pukul ${hours}:${minutes} ${ampm}`;
 };
+
+const InfoItem = ({ label, value }) => (
+  <div className="space-y-1">
+    <div className="text-sm font-medium text-gray-600">{label}:</div>
+    <div className="text-sm text-gray-800">
+      {value ? (
+        <span className="bg-white px-3 py-1 rounded border border-gray-200">
+          {value}
+        </span>
+      ) : (
+        <span className="italic text-gray-400">Belum tersedia</span>
+      )}
+    </div>
+  </div>
+);
 
 const SoapNotesForm = ({ onSave, loading, error, onCancel }) => {
   const [form, setForm] = useState({
@@ -36,8 +47,11 @@ const SoapNotesForm = ({ onSave, loading, error, onCancel }) => {
       return;
     }
     setFormError(null);
-    // onSave should accept setFormError as third argument
-    const errorMsg = await onSave(form, () => setForm({ subjective: "", objective: "", assessment: "", plan: "" }), setFormError);
+    const errorMsg = await onSave(
+      form,
+      () => setForm({ subjective: "", objective: "", assessment: "", plan: "" }),
+      setFormError
+    );
     if (errorMsg) setFormError(errorMsg);
   };
 
@@ -94,46 +108,106 @@ const SoapNoteDetailModal = ({ open, onClose, note }) => {
   if (!open || !note) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 p-4">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold">Detail Catatan SOAP</h3>
-            <button
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-700"
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl mx-4 relative max-h-[95vh] overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50 rounded-t-xl">
+          <div>
+            <h3 className="text-xl font-bold text-gray-800">
+              Detail Catatan SOAP
+            </h3>
+          </div>
+          <button
+            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+            onClick={onClose}
+            aria-label="Tutup"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              ✕
-            </button>
-          </div>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
 
-          <div className="space-y-4">
-            <div>
-              <h4 className="text-sm font-medium text-gray-500">Waktu</h4>
-              <p className="mt-1">{formatDateTime(note.note_time)}</p>
-            </div>
-
-            <div>
-              <h4 className="text-sm font-medium text-gray-500">Staff</h4>
-              <p className="mt-1">{note.medic_staff?.staff_name || "-"}</p>
-            </div>
-
-            {["subjective", "objective", "assessment", "plan"].map((field) => (
-              <div key={field}>
-                <h4 className="text-sm font-medium text-gray-500 capitalize">
-                  {field}
-                </h4>
-                <p className="mt-1 whitespace-pre-line text-gray-800 bg-gray-50 p-3 rounded-md">
-                  {note[field] || "-"}
-                </p>
+        {/* Content */}
+        <div className="overflow-y-auto max-h-[calc(95vh-180px)]">
+          <div className="p-6 space-y-6">
+            {/* Information Section */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-5 border border-blue-100">
+              <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <svg
+                  className="w-5 h-5 mr-2 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                Informasi Catatan
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InfoItem
+                  label="Waktu"
+                  value={formatCustomDate(note.note_time)}
+                />
+                <InfoItem
+                  label="Staff Pelaksana"
+                  value={note.medic_staff?.staff_name}
+                />
               </div>
-            ))}
-          </div>
+            </div>
 
-          <div className="flex justify-end mt-6">
+            {/* SOAP Sections */}
+            <div className="space-y-5">
+              {["subjective", "objective", "assessment", "plan"].map(
+                (field) => (
+                  <div
+                    key={field}
+                    className="bg-white rounded-lg border border-gray-200 overflow-hidden"
+                  >
+                    <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                      <h4 className="text-lg font-semibold text-gray-800 capitalize">
+                        {field}
+                      </h4>
+                    </div>
+                    <div className="px-6 py-4">
+                      {note[field] ? (
+                        <p className="whitespace-pre-line text-gray-800 leading-relaxed">
+                          {note[field]}
+                        </p>
+                      ) : (
+                        <p className="text-gray-400 italic">
+                          Tidak ada data untuk bagian ini
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
+          <div className="flex justify-end">
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm"
+              className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
             >
               Tutup
             </button>
@@ -178,12 +252,12 @@ const SoapNotesTable = ({ soapNotes, onViewDetail }) => {
           {soapNotes.map((note, idx) => (
             <tr key={note.soap_note_id || idx} className="hover:bg-gray-50">
               <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 min-w-[160px]">
-                {formatDateTime(note.note_time)}
+                {formatCustomDate(note.note_time)}
               </td>
               {["subjective", "objective", "assessment", "plan"].map(
                 (field) => (
                   <td
-                    key={field + '-' + (note.soap_note_id || idx)}
+                    key={field + "-" + (note.soap_note_id || idx)}
                     className="px-4 py-3 text-sm text-gray-900 max-w-[160px] truncate"
                     title={note[field] || ""}
                   >
@@ -244,19 +318,19 @@ const SoapNotesCard = ({ encounterId, token }) => {
   const handleSaveSoapNote = async (noteData, resetForm, setFormError) => {
     setFormLoading(true);
     try {
-      await soapNotesApi.createSoapNote(
-        encounterId,
-        noteData,
-        token
-      );
-      await fetchSoapNotes(); // Ambil data terbaru dari backend
+      await soapNotesApi.createSoapNote(encounterId, noteData, token);
+      await fetchSoapNotes();
       resetForm();
       setShowForm(false);
       return null;
     } catch (err) {
-      let msg = err.response?.data?.message || err.message || "Gagal menyimpan SOAP Note";
+      let msg =
+        err.response?.data?.message ||
+        err.message ||
+        "Gagal menyimpan SOAP Note";
       if (msg === "Encounter tidak dalam status aktif") {
-        msg = "Tidak dapat menambahkan SOAP Notes untuk kunjungan yang tidak aktif";
+        msg =
+          "Tidak dapat menambahkan SOAP Notes untuk kunjungan yang tidak aktif";
       }
       if (setFormError) setFormError(msg);
       return msg;
