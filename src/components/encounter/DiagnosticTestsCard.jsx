@@ -149,14 +149,19 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
             {tests && tests.length > 0 ? (
               tests.map((test) => (
                 <div
-                  key={test.id || test.test_id}
+                  key={test.test_id}
                   className="mb-6 border rounded-lg p-4 bg-gray-50"
                 >
                   <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-2">
                     <div>
                       <span className="font-semibold">
-                        {test.name || test.test_name}
+                        {test.test_name}
                       </span>
+                      {test.test_type && (
+                        <span className="ml-2 px-2 py-1 rounded text-xs bg-blue-100 text-blue-800">
+                          {test.test_type}
+                        </span>
+                      )}
                       <span
                         className="ml-2 px-2 py-1 rounded text-xs font-bold"
                         style={{
@@ -176,10 +181,15 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
                         {test.status}
                       </span>
                       <div className="mt-1 text-sm text-black">
-                        {" "}
                         <span className="font-bold">Diajukan oleh:</span>{" "}
                         {test.requested_staff?.staff_name || "-"}{" "}
                       </div>
+                      {test.processed_staff && (
+                        <div className="mt-1 text-sm text-black">
+                          <span className="font-bold">Diproses oleh:</span>{" "}
+                          {test.processed_staff?.staff_name}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <>
@@ -303,7 +313,7 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
                         Hasil Pemeriksaan
                       </h4>
                     </div>
-                    
+
                     {detailResults.results ? (
                       <div className="overflow-x-auto">
                         <table className="w-full divide-y divide-gray-200">
@@ -378,20 +388,6 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
           />
         )}
 
-        {/* Inline Form Tambah Pemeriksaan Penunjang */}
-        {showForm && (
-          <div className="mb-6">
-            <DiagnosticForm
-              encounterId={encounterId}
-              token={token}
-              onSuccess={() => {
-                setShowForm(false);
-                fetchTests();
-              }}
-              onClose={() => setShowForm(false)}
-            />
-          </div>
-        )}
       </div>
     </DashboardCard>
   );
