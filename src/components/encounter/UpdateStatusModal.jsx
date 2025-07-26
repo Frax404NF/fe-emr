@@ -81,7 +81,7 @@ const UpdateStatusModal = ({ test, token, onClose, onSuccess }) => {
     }
   }, [nextStatus, test.test_type]);
 
-  const availableTransitions = STATUS_FLOW[test.status] || [];
+  const availableTransitions = test.available_transitions || STATUS_FLOW[test.status] || [];
   const testType = test.test_type || test.testType || 'OTHER';
   const presetFields = TEST_RESULT_PRESETS[testType] || TEST_RESULT_PRESETS.OTHER;
 
@@ -128,7 +128,9 @@ const UpdateStatusModal = ({ test, token, onClose, onSuccess }) => {
     setError("");
     try {
       let updateData = { status: nextStatus };
-      if (nextStatus === "IN_PROGRESS") updateData.processed_by = Number(processedBy);
+      if (nextStatus === "IN_PROGRESS") {
+        updateData.processed_by = Number(processedBy);
+      }
       if (nextStatus === "COMPLETED") {
         const filledResults = {};
         [...presetFields, ...customFields].forEach(field => {

@@ -17,7 +17,7 @@ const diagnosticTestApi = {
         testData,
         config
       );
-      return response.data;
+      return response.data.data;
     } catch (error) {
       console.error('diagnosticTestService: Error creating diagnostic test:', error.response?.data);
       throw new Error(
@@ -26,27 +26,32 @@ const diagnosticTestApi = {
     }
   },
 
-  // Get all diagnostic tests for an encounter
-  async getDiagnosticTestsByEncounter(encounterId, token) {
+  async getDiagnosticTestsByEncounter(encounterId, token, params = {}) {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      params: params
     };
     try {
       const response = await axios.get(
         `${API_BASE_URL}/encounters/${encounterId}/diagnostic-tests`,
         config
       );
-      return response.data.data;
+
+      if (response.data.data && response.data.data.tests) {
+        return response.data.data.tests;
+      }
+
+      return response.data.data || [];
     } catch (error) {
+      console.error('diagnosticTestService: Error fetching tests:', error.response?.data);
       throw new Error(
         error.response?.data?.message || 'Gagal mengambil data pemeriksaan penunjang'
       );
     }
   },
 
-  // Get diagnostic test by ID
   async getDiagnosticTestById(testId, token) {
     const config = {
       headers: {
@@ -60,13 +65,13 @@ const diagnosticTestApi = {
       );
       return response.data.data;
     } catch (error) {
+      console.error('diagnosticTestService: Error fetching test by ID:', error.response?.data);
       throw new Error(
         error.response?.data?.message || 'Gagal mengambil data pemeriksaan penunjang'
       );
     }
   },
 
-  // Update diagnostic test
   async updateDiagnosticTest(testId, updateData, token) {
     const config = {
       headers: {
@@ -82,12 +87,42 @@ const diagnosticTestApi = {
       );
       return response.data.data;
     } catch (error) {
+      console.error('diagnosticTestService: Error updating test:', error.response?.data);
       throw new Error(
         error.response?.data?.message || 'Gagal update pemeriksaan penunjang'
       );
     }
   },
 
+  async getAvailableTransitions(testId, token) {
+    try {
+      const test = await this.getDiagnosticTestById(testId, token);
+      return test.available_transitions || [];
+    } catch (error) {
+      console.error('diagnosticTestService: Error getting transitions:', error);
+      return [];
+    }
+  },
+
+  async getVerificationReport(testId, token) {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/diagnostic-tests/${testId}/verification`,
+        config
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error('diagnosticTestService: Error getting verification report:', error.response?.data);
+      throw new Error(
+        error.response?.data?.message || 'Gagal mengambil laporan verifikasi'
+      );
+    }
+  }
 };
 
 export default diagnosticTestApi;
