@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import SessionManager from './components/SessionManager';
+import { Toaster } from 'react-hot-toast';
 
 // Page Components
 import {
@@ -136,6 +137,36 @@ const App = () => (
   <BrowserRouter>
     <AuthProvider>
       <AppRoutes />
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 3000,
+            iconTheme: {
+              primary: '#4ade80',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            duration: 5000,
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+          loading: {
+            iconTheme: {
+              primary: '#3b82f6',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
     </AuthProvider>
   </BrowserRouter>
 );
