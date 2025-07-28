@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import logoemr from '../../components/ui/assets/logoipsum-296.svg';
+import logoemr from '../../components/ui/assets/logoipsum-296.svg?url';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({

@@ -27,10 +27,8 @@ export function AuthProvider({ children }) {
     setCurrentUser(null);
     removeStoredUser();
     
-    // Dispatch event to notify components about session expiry
-    window.dispatchEvent(new CustomEvent('sessionExpired', {
-      detail: { reason, shouldRedirect: true }
-    }));
+    // Don't dispatch another sessionExpired event to avoid infinite loop
+    // Components can listen to user state changes instead
   }, []);
 
   // Validate user session
@@ -148,6 +146,7 @@ export function AuthProvider({ children }) {
   const value = {
     currentUser,
     loading,
+    token: currentUser?.access_token, // Add token for easy access
     login,
     signup,
     logout,

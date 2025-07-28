@@ -5,12 +5,10 @@
 
 // Authentication hook
 export { useAuth } from './useAuth';
-export { useSessionMonitor } from './useSessionMonitor';
 
 // Patient management hooks
 export {
   usePatients,
   usePatientSearch,
   usePatientForm,
-  usePatientDetail,
 } from './usePatients';

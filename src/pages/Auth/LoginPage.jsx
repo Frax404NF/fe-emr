@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import logoemr from '../../components/ui/assets/logoipsum-296.svg';
+import logoemr from '../../components/ui/assets/logoipsum-296.svg?url';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -57,6 +57,7 @@ const LoginPage = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
               value={email}
               onChange={e => setEmail(e.target.value)}
+              autoComplete="email"
               required
             />
           </div>
@@ -74,6 +75,7 @@ const LoginPage = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
               value={password}
               onChange={e => setPassword(e.target.value)}
+              autoComplete="current-password"
               required
             />
           </div>

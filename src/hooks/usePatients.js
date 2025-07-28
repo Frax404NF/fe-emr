@@ -362,4 +362,4 @@ const usePatientQuickLookup = () => {
 };
 
 // Ekspor semua hooks dalam satu object
-export { usePatients, usePatientSearch, usePatientForm, usePatientDetail, usePatientQuickLookup };
+export { usePatients, usePatientSearch, usePatientForm };

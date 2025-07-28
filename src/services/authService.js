@@ -10,8 +10,8 @@ const apiClient = axios.create();
 apiClient.interceptors.response.use(
   response => response,
   error => {
-    // Check if error is due to expired token
-    if (error.response?.status === 401) {
+    // Only handle session expiry for authenticated requests, not login attempts
+    if (error.response?.status === 401 && !error.config?.url?.includes('/login')) {
       console.warn('Authentication failed or token expired');
       
       // Clear stored user data
