@@ -122,6 +122,66 @@ const diagnosticTestApi = {
         error.response?.data?.message || 'Gagal mengambil laporan verifikasi'
       );
     }
+  },
+
+  // Admin functions for blockchain management
+  async getAllDiagnosticTests(token, filters = {}) {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: filters
+    };
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/admin/diagnostic-tests`,
+        config
+      );
+      return response.data.data || [];
+    } catch (error) {
+      console.warn('Admin endpoint not available, using fallback');
+      // Fallback: Get tests from all encounters (requires encounter IDs)
+      return [];
+    }
+  },
+
+  async getAllTestsForBlockchainAdmin(token) {
+    try {
+      // Try admin endpoint first
+      const response = await axios.get(
+        `${API_BASE_URL}/admin/diagnostic-tests/blockchain`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      return response.data.data || [];
+    } catch (error) {
+      console.warn('Admin blockchain endpoint not available, using fallback');
+      // Fallback: Return empty array, component will handle
+      return [];
+    }
+  },
+
+  async retryBlockchainVerification(testId, token) {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/diagnostic-tests/${testId}/retry-blockchain`,
+        {},
+        config
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error('diagnosticTestService: Error retrying blockchain verification:', error.response?.data);
+      throw new Error(
+        error.response?.data?.message || 'Gagal retry verifikasi blockchain'
+      );
+    }
   }
 };
 
