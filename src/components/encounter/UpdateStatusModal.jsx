@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import diagnosticTestApi from "../../services/clinical/diagnosticTestService";
 import staffApi from "../../services/clinical/staffService";
+import toast from 'react-hot-toast';
 
 const STATUS_FLOW = {
   REQUESTED: ["IN_PROGRESS"],
@@ -143,8 +144,22 @@ const UpdateStatusModal = ({ test, token, onClose, onSuccess }) => {
         if (testType === 'RADIOLOGY' && radiologyImpression) filledResults.impression = radiologyImpression;
         updateData.results = filledResults;
       }
-      await diagnosticTestApi.updateDiagnosticTest(test.id || test.test_id, updateData, token);
-      if (onSuccess) onSuccess();
+      const result = await diagnosticTestApi.updateDiagnosticTest(test.id || test.test_id, updateData, token);
+      
+      // ✅ Optimistic UI feedback
+      if (nextStatus === "COMPLETED") {
+        toast.success("✅ Test completed successfully!", { duration: 3000 });
+        toast.loading("⏳ Storing results to blockchain...", { 
+          duration: 5000,
+          id: `blockchain-${test.id || test.test_id}` 
+        });
+      } else if (nextStatus === "IN_PROGRESS") {
+        toast.success("📋 Test is now in progress", { duration: 3000 });
+      } else if (nextStatus === "RESULT_VERIFIED") {
+        toast.success("✅ Test result verified!", { duration: 3000 });
+      }
+      
+      if (onSuccess) onSuccess(result);
     } catch (err) {
       setError(err.message || "Gagal update status");
     }

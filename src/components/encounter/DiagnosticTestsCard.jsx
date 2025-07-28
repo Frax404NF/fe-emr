@@ -95,18 +95,65 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
         encounterId,
         token
       );
-      setTests(data);
+      // Ensure data is an array and filter out invalid entries
+      const validTests = Array.isArray(data) ? data.filter(test => test && test.test_id) : [];
+      setTests(validTests);
     } catch (err) {
       setError(err.message || "Gagal mengambil data pemeriksaan penunjang");
     }
     setLoading(false);
   }, [encounterId, token]);
 
+  // Remove blockchain polling - doctors/nurses don't need blockchain management
+
   useEffect(() => {
     if (encounterId && token) {
       fetchTests();
     }
   }, [fetchTests, encounterId, token]);
+
+  // Simple success handler for UpdateStatusModal
+  const handleUpdateSuccess = useCallback(() => {
+    fetchTests(); // Immediate refresh
+  }, [fetchTests]);
+
+  // Simple status display for doctors/nurses - no blockchain functionality
+  const getStatusDisplay = useCallback((test) => {
+    if (!test || !test.test_id) {
+      return {
+        badge: (
+          <span className="px-2 py-1 rounded text-xs font-bold bg-gray-400 text-black">
+            UNKNOWN
+          </span>
+        )
+      };
+    }
+    
+    // Simple status display without blockchain features
+    const statusColors = {
+      REQUESTED: "bg-yellow-400",
+      IN_PROGRESS: "bg-blue-400", 
+      COMPLETED: "bg-orange-400",
+      RESULT_VERIFIED: "bg-green-400"
+    };
+    
+    const displayText = {
+      REQUESTED: "REQUESTED",
+      IN_PROGRESS: "IN PROGRESS",
+      COMPLETED: "COMPLETED", 
+      RESULT_VERIFIED: "RESULT VERIFIED"
+    };
+    
+    return {
+      badge: (
+        <span 
+          className={`px-2 py-1 rounded text-xs text-black ${statusColors[test.status] || "bg-gray-400"}`}
+        >
+          {displayText[test.status] || test.status}
+        </span>
+      )
+    };
+  }, []);
 
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [detailResults, setDetailResults] = useState(null);
@@ -147,39 +194,24 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
         ) : (
           <div>
             {tests && tests.length > 0 ? (
-              tests.map((test) => (
+              tests.filter(test => test && test.test_id).map((test) => (
                 <div
                   key={test.test_id}
                   className="mb-6 border rounded-lg p-4 bg-gray-50"
                 >
                   <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-2">
                     <div>
-                      <span className="font-semibold">
-                        {test.test_name}
-                      </span>
-                      {test.test_type && (
-                        <span className="ml-2 px-2 py-1 rounded text-xs bg-blue-100 text-blue-800">
-                          {test.test_type}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-semibold">
+                          {test.test_name}
                         </span>
-                      )}
-                      <span
-                        className="ml-2 px-2 py-1 rounded text-xs font-bold"
-                        style={{
-                          background:
-                            test.status === "REQUESTED"
-                              ? "#facc15"
-                              : test.status === "IN_PROGRESS"
-                                ? "#38bdf8"
-                                : test.status === "COMPLETED"
-                                  ? "#4ade80"
-                                  : test.status === "RESULT_VERIFIED"
-                                    ? "#a78bfa"
-                                    : "#e5e7eb",
-                          color: "#1e293b",
-                        }}
-                      >
-                        {test.status}
-                      </span>
+                        {test.test_type && (
+                          <span className="px-2 py-1 rounded text-xs bg-blue-100 text-blue-800">
+                            {test.test_type}
+                          </span>
+                        )}
+                        {getStatusDisplay(test).badge}
+                      </div>
                       <div className="mt-1 text-sm text-black">
                         <span className="font-bold">Diajukan oleh:</span>{" "}
                         {test.requested_staff?.staff_name || "-"}{" "}
@@ -381,9 +413,9 @@ const DiagnosticTestsCard = ({ encounterId, token }) => {
             test={selectedTest}
             token={token}
             onClose={() => setShowUpdateModal(false)}
-            onSuccess={() => {
+            onSuccess={(updatedTest) => {
               setShowUpdateModal(false);
-              fetchTests();
+              handleUpdateSuccess(updatedTest);
             }}
           />
         )}
