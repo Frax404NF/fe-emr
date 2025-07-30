@@ -6,23 +6,14 @@ import { calculateEncounterStats } from '../../utils/encounterUtils';
 import NakesDashboardLayout from '../../layouts/NakesDashboardLayout';
 import DashboardCard from '../../components/ui/DashboardCard';
 import NotificationArea from '../../components/ui/NotificationArea';
+import { UserPlus, HomeHospital, Journal } from 'iconoir-react';
 
 // Komponen terpisah
-const StatCard = ({ title, subtitle, value, bgColor, circleColor }) => (
-  <div className={`${bgColor} p-4 rounded-lg`}>
-    <div className="flex items-center">
-      <div className="flex-shrink-0">
-        <div
-          className={`w-8 h-8 ${circleColor} rounded-full flex items-center justify-center`}
-        >
-          <span className="text-white text-sm font-bold">{value}</span>
-        </div>
-      </div>
-      <div className="ml-3">
-        <p className="text-sm font-medium text-gray-900">{title}</p>
-        <p className="text-xs text-gray-500">{subtitle}</p>
-      </div>
-    </div>
+const StatCard = ({ title, subtitle, value, borderColor }) => (
+  <div className={`bg-white p-6 rounded-xl border-2 ${borderColor} shadow-sm hover:shadow-md transition-all duration-200 text-center`}>
+    <div className="text-3xl font-bold text-gray-900 mb-3">{value}</div>
+    <div className="text-sm font-medium text-gray-600">{title}</div>
+    <div className="text-xs text-slate-500 mt-1">{subtitle}</div>
   </div>
 );
 
@@ -119,37 +110,33 @@ const NurseDashboard = () => {
         {/* Encounter Statistics */}
         <DashboardCard>
           <div className="p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
               Statistik Kunjungan IGD
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <StatCard
                 title="Menunggu Triage"
                 subtitle="Perlu assessment"
                 value={encounterStats.triage}
-                bgColor="bg-yellow-50"
-                circleColor="bg-yellow-500"
+                borderColor="border-amber-200"
               />
               <StatCard
                 title="Sedang Ditangani"
                 subtitle="Treatment ongoing"
                 value={encounterStats.ongoing}
-                bgColor="bg-blue-50"
-                circleColor="bg-blue-500"
+                borderColor="border-blue-200"
               />
               <StatCard
                 title="Observasi"
                 subtitle="Monitoring pasien"
                 value={encounterStats.observation}
-                bgColor="bg-purple-50"
-                circleColor="bg-purple-500"
+                borderColor="border-violet-200"
               />
               <StatCard
                 title="Total Aktif"
                 subtitle="Semua encounter"
                 value={encounterStats.total}
-                bgColor="bg-green-50"
-                circleColor="bg-green-500"
+                borderColor="border-emerald-200"
               />
             </div>
           </div>
@@ -158,30 +145,18 @@ const NurseDashboard = () => {
         {/* Quick Actions for Nurses */}
         <DashboardCard>
           <div className="p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
               Aksi Cepat Perawat
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <button
                 onClick={handleViewPatients}
-                className="p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors text-left"
+                className="bg-white p-6 rounded-xl border-2 border-blue-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-left group"
               >
-                <div className="text-blue-600 mb-2">
-                  <svg
-                    className="w-8 h-8"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                    />
-                  </svg>
+                <div className="text-blue-600 mb-4 group-hover:scale-110 group-hover:text-blue-700 transition-all duration-300">
+                  <UserPlus className="w-10 h-10" />
                 </div>
-                <h3 className="font-semibold text-gray-900">
+                <h3 className="font-semibold text-gray-900 mb-2">
                   Manajemen Pasien
                 </h3>
                 <p className="text-sm text-gray-600">
@@ -191,24 +166,12 @@ const NurseDashboard = () => {
 
               <button
                 onClick={handleCreateEncounter}
-                className="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors text-left"
+                className="bg-white p-6 rounded-xl border-2 border-emerald-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-left group"
               >
-                <div className="text-green-600 mb-2">
-                  <svg
-                    className="w-8 h-8"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                    />
-                  </svg>
+                <div className="text-emerald-600 mb-4 group-hover:scale-110 group-hover:text-emerald-700 transition-all duration-300">
+                  <HomeHospital className="w-10 h-10" />
                 </div>
-                <h3 className="font-semibold text-gray-900">Mulai Encounter</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">Mulai Encounter</h3>
                 <p className="text-sm text-gray-600">
                   Buat encounter baru untuk pasien
                 </p>
@@ -216,24 +179,12 @@ const NurseDashboard = () => {
 
               <button
                 onClick={handleViewEncounters}
-                className="p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors text-left"
+                className="bg-white p-6 rounded-xl border-2 border-violet-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-left group"
               >
-                <div className="text-purple-600 mb-2">
-                  <svg
-                    className="w-8 h-8"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                    />
-                  </svg>
+                <div className="text-violet-600 mb-4 group-hover:scale-110 group-hover:text-violet-700 transition-all duration-300">
+                  <Journal className="w-10 h-10" />
                 </div>
-                <h3 className="font-semibold text-gray-900">
+                <h3 className="font-semibold text-gray-900 mb-2">
                   Dashboard Encounter
                 </h3>
                 <p className="text-sm text-gray-600">

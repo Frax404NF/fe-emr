@@ -71,6 +71,7 @@ const AppRoutes = () => {
           }
         />
 
+        {/* Patient View - Belum diimplementasikan */}
         <Route
           path="/patient-view"
           element={
