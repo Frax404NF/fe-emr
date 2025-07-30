@@ -165,35 +165,29 @@ const BlockchainManagement = () => {
       {/* Blockchain Statistics */}
       <DashboardCard>
         <div className="p-6">
-          <h2 className="text-xl font-bold mb-4">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">
             Blockchain Integrity Overview
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white p-6 rounded-xl border-2 border-cyan-100 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="text-3xl font-bold text-gray-900 mb-3">
                 {stats.totalTests || 0}
               </div>
-              <div className="text-sm text-blue-800">Total Tests</div>
+              <div className="text-sm font-medium text-gray-600">Total Tests</div>
             </div>
-            <div className="bg-green-50 p-4 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">
+            <div className="bg-white p-6 rounded-xl border-2 border-emerald-100 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="text-3xl font-bold text-gray-900 mb-3">
                 {stats.statusDistribution?.RESULT_VERIFIED || 0}
               </div>
-              <div className="text-sm text-green-800">Blockchain Verified</div>
+              <div className="text-sm font-medium text-gray-600">Blockchain Verified</div>
             </div>
-            <div className="bg-yellow-50 p-4 rounded-lg">
-              <div className="text-2xl font-bold text-yellow-600">
+            <div className="bg-white p-6 rounded-xl border-2 border-amber-100 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="text-3xl font-bold text-gray-900 mb-3">
                 {stats.statusDistribution?.COMPLETED || 0}
               </div>
-              <div className="text-sm text-yellow-800">
+              <div className="text-sm font-medium text-gray-600">
                 Pending Verification
               </div>
-            </div>
-            <div className="bg-purple-50 p-4 rounded-lg">
-              <div className="text-2xl font-bold text-purple-600">
-                {stats.totalEncounters || 0}
-              </div>
-              <div className="text-sm text-purple-800">Total Encounters</div>
             </div>
           </div>
         </div>
@@ -203,7 +197,7 @@ const BlockchainManagement = () => {
       <DashboardCard>
         <div className="p-6">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
-            <h2 className="text-xl font-bold">
+            <h2 className="text-xl font-bold text-gray-900">
               Blockchain Transaction Management
             </h2>
 
@@ -319,7 +313,7 @@ const BlockchainManagement = () => {
                         <td className="px-4 py-3">
                           {test.encounters?.patients?.patient_name || "Unknown"}
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-6 py-4">
                           <span
                             className={`px-2 py-1 rounded-full text-xs ${getStatusColor(test.status)}`}
                           >
@@ -388,9 +382,9 @@ const BlockchainManagement = () => {
 
           {/* Pagination Controls */}
           {pagination.total > 0 && (
-            <div className="mt-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-200">
               {/* Pagination Info */}
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-gray-700">
                 Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
                 {Math.min(pagination.page * pagination.limit, pagination.total)}{" "}
                 of {pagination.total} results
@@ -404,7 +398,7 @@ const BlockchainManagement = () => {
                   <select
                     value={pagination.limit}
                     onChange={(e) => handleLimitChange(e.target.value)}
-                    className="px-2 py-1 border rounded text-sm"
+                    className="px-3 py-1 border-2 border-gray-200 rounded-lg text-sm focus:border-blue-600 focus:outline-none"
                   >
                     <option value="10">10</option>
                     <option value="25">25</option>
@@ -418,14 +412,14 @@ const BlockchainManagement = () => {
                   <button
                     onClick={() => handlePageChange(1)}
                     disabled={!pagination.has_prev}
-                    className="px-2 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1 text-sm border-2 border-gray-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     First
                   </button>
                   <button
                     onClick={() => handlePageChange(pagination.page - 1)}
                     disabled={!pagination.has_prev}
-                    className="px-2 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1 text-sm border-2 border-gray-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     Prev
                   </button>
@@ -453,10 +447,10 @@ const BlockchainManagement = () => {
                           <button
                             key={pageNum}
                             onClick={() => handlePageChange(pageNum)}
-                            className={`px-2 py-1 text-sm border rounded ${
+                            className={`px-3 py-1 text-sm border-2 rounded-lg transition-colors ${
                               pageNum === pagination.page
-                                ? "bg-blue-600 text-white border-blue-600"
-                                : "hover:bg-gray-50"
+                                ? "bg-gradient-to-r from-blue-800 to-blue-600 text-white border-blue-600"
+                                : "border-gray-200 hover:bg-slate-50"
                             }`}
                           >
                             {pageNum}
@@ -469,14 +463,14 @@ const BlockchainManagement = () => {
                   <button
                     onClick={() => handlePageChange(pagination.page + 1)}
                     disabled={!pagination.has_next}
-                    className="px-2 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1 text-sm border-2 border-gray-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     Next
                   </button>
                   <button
                     onClick={() => handlePageChange(pagination.total_pages)}
                     disabled={!pagination.has_next}
-                    className="px-2 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1 text-sm border-2 border-gray-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     Last
                   </button>
@@ -490,14 +484,14 @@ const BlockchainManagement = () => {
       {/* Test Detail Modal */}
       {showDetailModal && selectedTest && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">
+          <div className="bg-white rounded-xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-gray-900">
                 Test Details - ID #{selectedTest.test_id}
               </h3>
               <button
                 onClick={() => setShowDetailModal(false)}
-                className="text-gray-500 hover:text-gray-700 text-2xl"
+                className="text-gray-500 hover:text-gray-700 text-2xl font-bold hover:bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
               >
                 ×
               </button>
@@ -505,8 +499,8 @@ const BlockchainManagement = () => {
 
             <div className="space-y-6">
               {/* Patient Information */}
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-blue-800 mb-2">
+              <div className="bg-blue-50 border border-blue-200 p-6 rounded-xl">
+                <h4 className="font-semibold text-blue-900 mb-4">
                   Patient Information
                 </h4>
                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -527,8 +521,8 @@ const BlockchainManagement = () => {
               </div>
 
               {/* Test Information */}
-              <div className="bg-green-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-green-800 mb-2">
+              <div className="bg-emerald-50 border border-emerald-200 p-6 rounded-xl">
+                <h4 className="font-semibold text-emerald-900 mb-4">
                   Test Information
                 </h4>
                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -560,18 +554,18 @@ const BlockchainManagement = () => {
               </div>
 
               {/* Blockchain Information */}
-              <div className="bg-purple-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-purple-800 mb-2">
+              <div className="bg-violet-50 border border-violet-200 p-6 rounded-xl">
+                <h4 className="font-semibold text-violet-900 mb-4">
                   Blockchain Information
                 </h4>
                 <div className="space-y-3 text-sm">
                   <div>
                     <span className="text-gray-600">Verification Status:</span>
                     <div
-                      className={`inline-block ml-2 px-2 py-1 rounded text-xs font-medium ${
+                      className={`inline-block ml-2 px-3 py-1 rounded-full text-xs font-semibold ${
                         selectedTest.blockchainVerified
-                          ? "bg-green-100 text-green-800"
-                          : "bg-yellow-100 text-yellow-800"
+                          ? "bg-emerald-100 border border-emerald-300 text-emerald-800"
+                          : "bg-amber-100 border border-amber-300 text-amber-800"
                       }`}
                     >
                       {selectedTest.blockchainVerified ? "Verified" : "Pending"}
@@ -580,7 +574,7 @@ const BlockchainManagement = () => {
 
                   <div>
                     <span className="text-gray-600">Medical Data Hash:</span>
-                    <div className="font-mono text-xs bg-gray-100 p-2 rounded mt-1 break-all">
+                    <div className="font-mono text-xs bg-slate-100 border border-slate-200 p-3 rounded-lg mt-2 break-all">
                       {selectedTest.results_hash || "Not available"}
                     </div>
                   </div>
@@ -589,7 +583,7 @@ const BlockchainManagement = () => {
                     <div>
                       <span className="text-gray-600">Transaction Hash:</span>
                       <div className="flex items-center gap-2 mt-1">
-                        <div className="font-mono text-xs bg-gray-100 p-2 rounded flex-1 break-all">
+                        <div className="font-mono text-xs bg-slate-100 border border-slate-200 p-3 rounded-lg flex-1 break-all">
                           {selectedTest.result_tx_hash}
                         </div>
                         <a
@@ -598,7 +592,7 @@ const BlockchainManagement = () => {
                           )}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
+                          className="px-3 py-2 bg-gradient-to-r from-blue-800 to-blue-600 text-white rounded-lg text-xs font-medium hover:from-blue-900 hover:to-blue-700 transition-all duration-200 shadow-sm"
                         >
                           View on Etherscan
                         </a>
@@ -609,8 +603,8 @@ const BlockchainManagement = () => {
               </div>
 
               {/* Audit Trail */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-800 mb-2">
+              <div className="bg-slate-50 border border-slate-200 p-6 rounded-xl">
+                <h4 className="font-semibold text-slate-900 mb-4">
                   Audit Trail
                 </h4>
                 <div className="text-sm space-y-2">
@@ -618,7 +612,7 @@ const BlockchainManagement = () => {
                     <span className="text-gray-600">Has Medical Hash:</span>
                     <span
                       className={
-                        selectedTest.hasHash ? "text-green-600" : "text-red-600"
+                        selectedTest.hasHash ? "text-emerald-600 font-semibold" : "text-red-500 font-semibold"
                       }
                     >
                       {selectedTest.hasHash ? "Yes" : "No"}
@@ -629,8 +623,8 @@ const BlockchainManagement = () => {
                     <span
                       className={
                         selectedTest.blockchainVerified
-                          ? "text-green-600"
-                          : "text-yellow-600"
+                          ? "text-emerald-600 font-semibold"
+                          : "text-amber-600 font-semibold"
                       }
                     >
                       {selectedTest.blockchainVerified ? "Yes" : "Pending"}
@@ -653,7 +647,7 @@ const BlockchainManagement = () => {
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end gap-2">
+            <div className="mt-8 flex justify-end gap-3">
               {selectedTest.status === "COMPLETED" &&
                 !selectedTest.blockchainVerified && (
                   <button
@@ -661,14 +655,14 @@ const BlockchainManagement = () => {
                       handleRetryBlockchain(selectedTest.test_id);
                       setShowDetailModal(false);
                     }}
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    className="px-6 py-2 bg-gradient-to-r from-blue-800 to-blue-600 text-white rounded-lg font-medium hover:from-blue-900 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
                   >
                     Retry Blockchain Verification
                   </button>
                 )}
               <button
                 onClick={() => setShowDetailModal(false)}
-                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                className="px-6 py-2 bg-slate-600 text-white rounded-lg font-medium hover:bg-slate-700 transition-colors duration-200"
               >
                 Close
               </button>
