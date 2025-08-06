@@ -104,10 +104,33 @@ const BlockchainManagement = () => {
             );
         }
 
+        // Update selectedTest if modal is open and matches current test
+        if (selectedTest && selectedTest.test_id === testId) {
+          setSelectedTest(prev => ({
+            ...prev,
+            status: data.status || prev.status,
+            result_tx_hash: data.transaction_hash || data.result_tx_hash || prev.result_tx_hash,
+            blockchainVerified: data.status === "RESULT_VERIFIED" || data.blockchain_verified || prev.blockchainVerified,
+            processed_at: data.processed_at || prev.processed_at
+          }));
+        }
+
         // Refresh data after retry
-        setTimeout(() => {
-          fetchBlockchainTests();
-          fetchDashboardStats();
+        setTimeout(async () => {
+          await fetchBlockchainTests();
+          await fetchDashboardStats();
+          
+          // Also refresh the selected test data if modal is still open
+          if (selectedTest && selectedTest.test_id === testId) {
+            try {
+              const updatedTests = await adminService.getBlockchainTests({ test_id: testId });
+              if (updatedTests.success && updatedTests.data.length > 0) {
+                setSelectedTest(updatedTests.data[0]);
+              }
+            } catch (error) {
+              console.error("Error refreshing selected test:", error);
+            }
+          }
         }, 2000);
       }
     } catch (error) {
