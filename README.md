@@ -1,6 +1,6 @@
 # 🏥 EMR Frontend Application with Blockchain Integration
 
-**Electronic Medical Records System - Frontend Interface**  
+**Electronic Medical Records System - Frontend Interface**
 *Skripsi S1 Teknik Informatika - Blockchain-based Medical Data Security*
 
 ---
