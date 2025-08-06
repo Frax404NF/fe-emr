@@ -12,6 +12,7 @@ const EncounterDashboard = () => {
     useEncounter();
 
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [activeTab, setActiveTab] = useState('active'); // 'active' or 'completed'
 
   const handleBackToDashboard = () => {
     // Navigate back to appropriate dashboard based on user role
@@ -26,9 +27,15 @@ const EncounterDashboard = () => {
 
   // Stable fetch function to prevent infinite re-renders
   const fetchData = useCallback(() => {
-    const statusFilter = selectedStatus ? [selectedStatus] : [];
-    fetchActiveEncounters(statusFilter);
-  }, [selectedStatus, fetchActiveEncounters]);
+    if (activeTab === 'active') {
+      const statusFilter = selectedStatus ? [selectedStatus] : [];
+      fetchActiveEncounters(statusFilter);
+    } else if (activeTab === 'completed') {
+      // For completed encounters, fetch DISCHARGED and ADMITTED
+      const completedStatuses = ['DISCHARGED', 'ADMITTED'];
+      fetchActiveEncounters(completedStatuses);
+    }
+  }, [selectedStatus, activeTab, fetchActiveEncounters]);
 
   useEffect(() => {
     fetchData();
@@ -186,67 +193,121 @@ const EncounterDashboard = () => {
               </p>
             </div>
 
+            {/* Tab Navigation */}
+            <div className="px-6 pb-4 border-b border-gray-200">
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => setActiveTab('active')}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    activeTab === 'active'
+                      ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  Encounter Aktif
+                </button>
+                <button
+                  onClick={() => setActiveTab('completed')}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    activeTab === 'completed'
+                      ? 'bg-green-100 text-green-700 border border-green-200'
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  Encounter Selesai
+                </button>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-6 py-5">
-              {['TRIAGE', 'ONGOING', 'OBSERVATION', 'DISPOSITION'].map(
-                status => {
-                  const count = encounters.filter(
-                    e => e.status === status
-                  ).length;
-                  return (
-                    <div
-                      key={status}
-                      className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200"
-                    >
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0">
-                          <div
-                            className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold shadow-sm ${getStatusBadgeColor(
-                              status
-                            )}`}
-                          >
-                            {count}
+              {activeTab === 'active' 
+                ? ['TRIAGE', 'ONGOING', 'OBSERVATION', 'DISPOSITION'].map(status => {
+                    const count = encounters.filter(e => e.status === status).length;
+                    return (
+                      <div key={status} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0">
+                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold shadow-sm ${getStatusBadgeColor(status)}`}>
+                              {count}
+                            </div>
+                          </div>
+                          <div className="ml-4">
+                            <p className="text-sm font-semibold text-gray-900 mb-1">{status}</p>
+                            <p className="text-xs text-gray-500">{count} {count === 1 ? 'encounter' : 'encounters'}</p>
                           </div>
                         </div>
-                        <div className="ml-4">
-                          <p className="text-sm font-semibold text-gray-900 mb-1">
-                            {status}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {count} {count === 1 ? 'encounter' : 'encounters'}
-                          </p>
+                      </div>
+                    );
+                  })
+                : ['DISCHARGED', 'ADMITTED'].map(status => {
+                    const count = encounters.filter(e => e.status === status).length;
+                    return (
+                      <div key={status} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0">
+                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold shadow-sm ${getStatusBadgeColor(status)}`}>
+                              {count}
+                            </div>
+                          </div>
+                          <div className="ml-4">
+                            <p className="text-sm font-semibold text-gray-900 mb-1">{status}</p>
+                            <p className="text-xs text-gray-500">{count} {count === 1 ? 'encounter' : 'encounters'}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                }
-              )}
+                    );
+                  })
+              }
             </div>
           </DashboardCard>
 
-          {/* Status Filter */}
-          <DashboardCard>
-            <div className="p-4">
-              <div className="flex items-center space-x-4">
-                <label className="text-sm font-medium text-gray-700">
-                  Filter Status:
-                </label>
-                <select
-                  value={selectedStatus}
-                  onChange={e => setSelectedStatus(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Semua Status</option>
-                  <option value="TRIAGE">Triage</option>
-                  <option value="ONGOING">Ongoing</option>
-                  <option value="OBSERVATION">Observasi</option>
-                  <option value="DISPOSITION">Disposition</option>
-                </select>
-                <span className="text-sm text-gray-500">
-                  Total: {encounters.length} encounter
-                </span>
+          {/* Status Filter - only for active tab */}
+          {activeTab === 'active' && (
+            <DashboardCard>
+              <div className="p-4">
+                <div className="flex items-center space-x-4">
+                  <label className="text-sm font-medium text-gray-700">
+                    Filter Status:
+                  </label>
+                  <select
+                    value={selectedStatus}
+                    onChange={e => setSelectedStatus(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Semua Status Aktif</option>
+                    <option value="TRIAGE">Triage</option>
+                    <option value="ONGOING">Ongoing</option>
+                    <option value="OBSERVATION">Observasi</option>
+                    <option value="DISPOSITION">Disposition</option>
+                  </select>
+                  <span className="text-sm text-gray-500">
+                    Total: {encounters.length} encounter aktif
+                  </span>
+                </div>
               </div>
-            </div>
-          </DashboardCard>
+            </DashboardCard>
+          )}
+
+          {/* Info for completed tab */}
+          {activeTab === 'completed' && (
+            <DashboardCard>
+              <div className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-sm font-medium text-gray-700">
+                      Menampilkan encounter yang telah selesai (Pulang & Rawat Inap)
+                    </span>
+                  </div>
+                  <span className="text-sm text-gray-500">
+                    Total: {encounters.length} encounter selesai
+                  </span>
+                </div>
+              </div>
+            </DashboardCard>
+          )}
 
           {/* Encounters List */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200">
@@ -267,7 +328,7 @@ const EncounterDashboard = () => {
                     />
                   </svg>
                   <h3 className="text-lg font-semibold text-gray-900">
-                    Daftar Kunjungan IGD Terbaru
+                    {activeTab === 'active' ? 'Daftar Kunjungan IGD Aktif' : 'Daftar Kunjungan IGD Selesai'}
                   </h3>
                 </div>
               </div>
@@ -288,10 +349,13 @@ const EncounterDashboard = () => {
                     />
                   </svg>
                   <p className="mt-4 text-lg font-medium text-gray-900">
-                    Tidak ada encounter aktif
+                    {activeTab === 'active' ? 'Tidak ada encounter aktif' : 'Tidak ada encounter selesai'}
                   </p>
                   <p className="mt-2 text-sm text-gray-500">
-                    Belum ada encounter yang terdaftar saat ini
+                    {activeTab === 'active' 
+                      ? 'Belum ada encounter yang sedang berlangsung saat ini'
+                      : 'Belum ada encounter yang telah diselesaikan'
+                    }
                   </p>
                 </div>
               ) : (

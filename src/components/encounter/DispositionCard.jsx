@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { getStatusConfig } from '../../utils/encounterUtils';
 import DashboardCard from '../ui/DashboardCard';
+import DispositionModal from './DispositionModal';
 
 const DispositionCard = ({
   encounter,
@@ -9,37 +10,80 @@ const DispositionCard = ({
   statusUpdateLoading
 }) => {
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [showDispositionModal, setShowDispositionModal] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState('');
   
   const statusInfo = getStatusConfig(encounter.status);
-  const nextStatusOptions = {
+  const isStatusFinal = ['DISCHARGED', 'ADMITTED'].includes(encounter.status);
+  const isResponsibleDoctor = currentUser?.staff_id === encounter.responsible_staff_id;
+  const canUpdate = currentUser?.role === 'DOCTOR' || 
+                   (currentUser?.role === 'NURSE' && !isStatusFinal);
+  const canUpdateToFinal = isResponsibleDoctor;
+
+  const allNextStatusOptions = {
     TRIAGE: ['ONGOING'],
     ONGOING: ['OBSERVATION', 'DISPOSITION'],
     OBSERVATION: ['ONGOING', 'DISPOSITION'],
     DISPOSITION: ['DISCHARGED', 'ADMITTED']
   }[encounter.status] || [];
-  
-  const isStatusFinal = ['DISCHARGED', 'ADMITTED'].includes(encounter.status);
-  const canUpdate = currentUser?.role === 'DOCTOR' || 
-                   (currentUser?.role === 'NURSE' && !isStatusFinal);
+
+  // Filter status options based on user role and authorization
+  const nextStatusOptions = allNextStatusOptions.filter(status => {
+    const isFinalStatus = ['DISCHARGED', 'ADMITTED'].includes(status);
+    if (isFinalStatus) {
+      // Only responsible doctor can see final status options
+      return canUpdateToFinal;
+    }
+    return true;
+  });
 
   const handleStatusChange = (e) => {
     const newStatus = e.target.value;
     setSelectedStatus(newStatus);
 
-    // Cegah perawat mengubah ke status final
+    // Cegah perawat dan dokter selain penanggung jawab mengubah ke status final
     const isFinalStatus = ['DISCHARGED', 'ADMITTED'].includes(newStatus);
-    if (currentUser?.role === 'NURSE' && isFinalStatus) {
-      alert('Hanya dokter yang dapat mengubah status final encounter.');
-      setSelectedStatus('');
-      return;
+    if (isFinalStatus) {
+      if (currentUser?.role === 'NURSE') {
+        alert('Perawat tidak diperbolehkan mengubah status final encounter.');
+        setSelectedStatus('');
+        return;
+      }
+      if (!canUpdateToFinal) {
+        alert('Hanya dokter penanggung jawab yang dapat mengubah status final encounter.');
+        setSelectedStatus('');
+        return;
+      }
     }
 
-    if (newStatus && window.confirm(
-      `Apakah Anda yakin ingin mengubah status dari "${statusInfo.displayName}" ke "${
-        getStatusConfig(newStatus).displayName}"?`
-    )) {
-      onStatusUpdate(newStatus);
+    if (!newStatus) return;
+
+    // For final statuses, show disposition modal
+    if (isFinalStatus) {
+      setPendingStatus(newStatus);
+      setShowDispositionModal(true);
+      setSelectedStatus('');
+    } else {
+      // For non-final statuses, show confirmation and update directly
+      if (window.confirm(
+        `Apakah Anda yakin ingin mengubah status dari "${statusInfo.displayName}" ke "${
+          getStatusConfig(newStatus).displayName}"?`
+      )) {
+        onStatusUpdate(newStatus);
+      }
+      setSelectedStatus('');
     }
+  };
+
+  const handleDispositionConfirm = (newStatus, dispositionData) => {
+    onStatusUpdate(newStatus, dispositionData);
+    setShowDispositionModal(false);
+    setPendingStatus('');
+  };
+
+  const handleDispositionCancel = () => {
+    setShowDispositionModal(false);
+    setPendingStatus('');
     setSelectedStatus('');
   };
 
@@ -140,7 +184,8 @@ const DispositionCard = ({
 
         {isStatusFinal && (
           <div className="border-t pt-4">
-            <div className="bg-green-50 border-l-4 border-green-400 p-3 rounded">
+            {/* Final Status Indicator */}
+            <div className="bg-green-50 border-l-4 border-green-400 p-3 rounded mb-6">
               <div className="flex">
                 <div className="flex-shrink-0">
                   <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
@@ -148,19 +193,63 @@ const DispositionCard = ({
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm text-green-700">
-                    Encounter telah selesai dengan status {statusInfo.displayName}.
+                  <p className="text-sm font-medium text-green-700">
+                    Encounter selesai - {statusInfo.displayName}
+                  </p>
+                  <p className="text-xs text-green-600 mt-1">
+                    Selesai: {new Date(encounter.encounter_end_time).toLocaleString('id-ID')}
                   </p>
                 </div>
               </div>
             </div>
+
+            {/* Disposition Information */}
+            {(() => {
+              const dispositionData = encounter.disposition;
+              let dispData = null;
+              
+              if (Array.isArray(dispositionData) && dispositionData.length > 0) {
+                dispData = dispositionData[0];
+              } else if (dispositionData && typeof dispositionData === 'object' && dispositionData.discharge_summary) {
+                dispData = dispositionData;
+              }
+              
+              if (dispData && dispData.discharge_summary) {
+                return (
+                  <div className="border-t pt-4 mt-4">
+                    <h4 className="text-sm font-medium text-gray-600 mb-3">Rangkuman Disposition</h4>
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-xs font-medium text-gray-500 mb-1 block">Kondisi Pasien Saat Keluar</label>
+                        <p className="text-sm text-gray-800 bg-gray-50 p-3 rounded border">
+                          {dispData.discharge_summary}
+                        </p>
+                      </div>
+
+                      {dispData.follow_up_instructions && (
+                        <div>
+                          <label className="text-xs font-medium text-gray-500 mb-1 block">Instruksi Tindak Lanjut</label>
+                          <p className="text-sm text-gray-800 bg-gray-50 p-3 rounded border">
+                            {dispData.follow_up_instructions}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              }
+              
+              return null;
+            })()}
           </div>
         )}
 
+        {/* Show doctor info */}
         {encounter.medic_staff && (
           <div className="border-t pt-4 mt-4">
             <label className="text-sm font-medium text-gray-600 mb-2 block">
-              Tenaga Medis yang Menangani
+              Dokter Penanggung Jawab
             </label>
             <div className="flex items-center space-x-3">
               <div className="flex-shrink-0">
@@ -183,6 +272,15 @@ const DispositionCard = ({
           </div>
         )}
       </div>
+
+      <DispositionModal
+        isOpen={showDispositionModal}
+        onClose={handleDispositionCancel}
+        onConfirm={handleDispositionConfirm}
+        newStatus={pendingStatus}
+        currentUser={currentUser}
+        loading={statusUpdateLoading}
+      />
     </DashboardCard>
   );
 };

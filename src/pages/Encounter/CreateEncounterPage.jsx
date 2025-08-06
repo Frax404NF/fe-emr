@@ -169,8 +169,6 @@ const CreateEncounterPage = () => {
         ...(Object.keys(vitalData).length > 0 && { initial_vitals: vitalData }),
       };
 
-      console.log('Payload being sent:', payload); // Debug log
-
       const newEncounter = await startEncounter(payload);
       setNotification({
         type: 'success',

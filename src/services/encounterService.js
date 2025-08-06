@@ -47,11 +47,17 @@ const startEncounter = async encounterData => {
   }
 };
 
-const updateEncounterStatus = async (encounterId, newStatus) => {
+const updateEncounterStatus = async (encounterId, newStatus, dispositionData = null) => {
   try {
-    const response = await apiClient.put(`${API_URL}/${encounterId}/status`, {
-      newStatus,
-    });
+    const payload = { newStatus };
+    
+    // Add disposition data for final statuses
+    if (['DISCHARGED', 'ADMITTED'].includes(newStatus) && dispositionData) {
+      payload.disposition = dispositionData;
+    }
+
+
+    const response = await apiClient.put(`${API_URL}/${encounterId}/status`, payload);
 
     if (response.data.success) {
       return response.data.data;

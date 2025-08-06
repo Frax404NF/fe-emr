@@ -47,7 +47,7 @@ export const useEncounter = () => {
    * Update encounter status with optimistic updates
    */
   const updateEncounterStatus = useCallback(
-    async (encounterId, newStatus) => {
+    async (encounterId, newStatus, dispositionData = null) => {
       if (!mountedRef.current) return;
 
       setLoading(true);
@@ -75,7 +75,8 @@ export const useEncounter = () => {
 
         const updatedEncounter = await encounterService.updateEncounterStatus(
           encounterId,
-          newStatus
+          newStatus,
+          dispositionData
         );
 
         if (mountedRef.current) {

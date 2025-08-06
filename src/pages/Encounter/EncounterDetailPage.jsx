@@ -69,16 +69,22 @@ const EncounterDetailPage = () => {
 
   const handleBackToDashboard = () => navigate('/encounter-dashboard');
 
-  const handleStatusUpdate = async (newStatus) => {
+  const handleStatusUpdate = async (newStatus, dispositionData = null) => {
     if (!currentEncounter || statusUpdateLoading) return;
+
 
     setStatusUpdateLoading(true);
     try {
-      await updateEncounterStatus(currentEncounter.encounter_id, newStatus);
+      await updateEncounterStatus(currentEncounter.encounter_id, newStatus, dispositionData);
       await fetchEncounterDetails(currentEncounter.encounter_id);
+      
+      const successMessage = dispositionData 
+        ? `Status berhasil diubah menjadi ${getStatusConfig(newStatus).displayName} dengan disposition`
+        : `Status berhasil diubah menjadi ${getStatusConfig(newStatus).displayName}`;
+        
       setNotifications(prev => [...prev, {
         type: 'success',
-        message: `Status berhasil diubah menjadi ${getStatusConfig(newStatus).displayName}`,
+        message: successMessage,
         id: Date.now()
       }]);
     } catch (err) {
