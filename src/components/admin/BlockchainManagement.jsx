@@ -3,6 +3,8 @@ import DashboardCard from "../ui/DashboardCard";
 import adminService from "../../services/adminService";
 import { useAuth } from "../../hooks/useAuth";
 import toast from "react-hot-toast";
+import HashVerificationModal from "./HashVerificationModal";
+import { CheckCircle } from "iconoir-react";
 
 const BlockchainManagement = () => {
   const { token } = useAuth();
@@ -22,6 +24,10 @@ const BlockchainManagement = () => {
   const [daysFilter, setDaysFilter] = useState("all");
   const [selectedTest, setSelectedTest] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+
+  // Hash Verification Modal States
+  const [showHashModal, setShowHashModal] = useState(false);
+  const [selectedTestForHash, setSelectedTestForHash] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 25,
@@ -138,6 +144,12 @@ const BlockchainManagement = () => {
       toast.error(`Retry failed: ${error.message}`);
       console.error("Retry blockchain error:", error);
     }
+  };
+
+  // Handle hash verification modal
+  const handleVerifyHash = (test) => {
+    setSelectedTestForHash(test);
+    setShowHashModal(true);
   };
 
   // Initialize data on component mount
@@ -349,8 +361,9 @@ const BlockchainManagement = () => {
                         <td className="px-4 py-3">
                           {test.status === "RESULT_VERIFIED" ||
                           test.result_tx_hash ? (
-                            <span className="text-green-600 text-xs font-medium">
-                              ✓ Verified
+                            <span className="flex items-center gap-1 text-green-600 text-xs font-medium">
+                              <CheckCircle className="w-3 h-3" />
+                              Verified
                             </span>
                           ) : (
                             <span className="text-gray-400 text-xs">
@@ -382,6 +395,18 @@ const BlockchainManagement = () => {
                             >
                               Details
                             </button>
+                            {/* Hash Verification Button - Only show if test has blockchain hash */}
+                            {test.results_hash && 
+                             test.status === "RESULT_VERIFIED" && 
+                             test.result_tx_hash && (
+                              <button
+                                className="px-2 py-1 bg-violet-100 text-violet-700 rounded text-xs hover:bg-violet-200 font-medium"
+                                onClick={() => handleVerifyHash(test)}
+                                title="Verify hash integrity with blockchain"
+                              >
+                                Verify Hash
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -693,6 +718,13 @@ const BlockchainManagement = () => {
           </div>
         </div>
       )}
+
+      {/* Hash Verification Modal */}
+      <HashVerificationModal
+        isOpen={showHashModal}
+        onClose={() => setShowHashModal(false)}
+        testData={selectedTestForHash}
+      />
     </div>
   );
 };

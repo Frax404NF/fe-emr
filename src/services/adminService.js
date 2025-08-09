@@ -73,6 +73,15 @@ class AdminService {
     }
   }
 
+  async verifyHashIntegrity(testId) {
+    try {
+      const response = await this.api.get(`/admin/blockchain/verify-hash/${testId}`);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
   // ===================== User Management =====================
   async getAllUsers(roleFilter = '') {
     try {

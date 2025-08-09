@@ -1,16 +1,22 @@
 {
   "name": "frontend-emr",
-  "private": true,
+  "description": "Frontend EMR System with Blockchain Integration - Testing Implementation using V-Model Methodology",
   "version": "1.0.0",
   "type": "module",
+  "keywords": ["emr", "blockchain", "healthcare", "testing", "v-model", "permenkes"],
+  "author": "Skripsi Project - Blockchain EMR System",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
+
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "test:unit": "vitest src/test/unit/",
+    "test:integration": "vitest src/test/integration/",
+    "test:verbose": "vitest --run --reporter verbose"
   },
   "dependencies": {
     "@material-tailwind/react": "^3.0.0-beta.24",
@@ -36,6 +42,14 @@
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "tailwindcss": "^3.4.17",
-    "vite": "^5.2.0"
+    "vite": "^5.2.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/user-event": "^14.4.3",
+    "vitest": "^0.34.6",
+    "@vitest/ui": "^0.34.6",
+    "@vitest/coverage-v8": "^0.34.6",
+    "jsdom": "^22.1.0",
+    "msw": "^1.3.2"
   }
 }
